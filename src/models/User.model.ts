@@ -1,24 +1,19 @@
-import { prop, getModelForClass } from "@typegoose/typegoose"
+import { prop, getModelForClass, modelOptions } from "@typegoose/typegoose"
 
+@modelOptions({ schemaOptions: { timestamps: true } })
 class User {
 
     @prop()
     id: string
-    
+
     @prop()
     userName: string
-    
+
     @prop()
     email: string
-    
+
     @prop()
     password: string
-    
-    @prop()
-    dateCreated: string
-    
-    @prop()
-    dateUpdated: string
 
 }
 
