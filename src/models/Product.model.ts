@@ -1,18 +1,16 @@
 import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose"
+import {Comment} from "./Comment.model.js"
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 class Product {
-    @prop()
-    id: string
-
     @prop()
     productName: string
 
     @prop()
     description: string
 
-    @prop()
-    comment: string
+    @prop({ type: () => [Comment] })
+    comment: Comment[]
 
     @prop()
     price: number
