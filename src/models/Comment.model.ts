@@ -1,12 +1,14 @@
 import { modelOptions, prop } from "@typegoose/typegoose";
+import { Product } from "./Product.model.js"
+import { User } from "./User.model.js"
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Comment {
-    @prop()
-    productId: string
+    @prop({ ref: () => Product })
+    productId: Product
 
-    @prop()
-    userId: string
+    @prop({ ref: () => User })
+    userId: User
 
     @prop()
     text: string
