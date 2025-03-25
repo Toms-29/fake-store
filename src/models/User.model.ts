@@ -3,16 +3,13 @@ import { prop, getModelForClass, modelOptions } from "@typegoose/typegoose"
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class User {
 
-    @prop()
-    id: string
-
-    @prop()
+    @prop({ required: true, trim: true, maxlength: 30, minlength: 1 })
     userName: string
 
-    @prop()
+    @prop({ required: true, trim: true, maxlength: 30, minlength: 11 })
     email: string
 
-    @prop()
+    @prop({ required: true, trim: true, maxlength: 100, minlength: 8 })
     password: string
 
 }
