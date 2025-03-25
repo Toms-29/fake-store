@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "control": "ts-node-dev --respawn ./src/index.ts",
     "dev": "npm run tsc && npm run start",
     "tsc": "tsc",
     "start": "node ./dist/index.js"
@@ -23,6 +22,7 @@
     "@typegoose/typegoose": "^12.13.0",
     "express": "^4.21.2",
     "mongoose": "^8.12.1",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "zod": "^3.24.2"
   }
 }
