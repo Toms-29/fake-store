@@ -37,36 +37,39 @@ export const register = async (req: Request, res: Response) => {
 
 }
 
-export const login = async (req: Request, res: Response): Promise<Response> => {
+export const login = async (req: Request, res: Response) => {
     const { email, password } = req.body
 
     try {
         const userFound = await User.findOne({ email })
-        if (!userFound) return res.status(400).json({ message: 'User not found' })
+        if (!userFound) res.status(400).json({ message: 'User not found' })
 
 
-        const isMatch = await bcrypt.compare(password, userFound?.password)
-        if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' })
+        if (userFound?.password) {
+            const isMatch = await bcrypt.compare(password, userFound?.password)
+            if (!isMatch) res.status(400).json({ message: 'Invalid credentials' })
 
+            const token = await createAccessToken({ id: userFound?._id })
 
-        const token = await createAccessToken({ id: userFound?._id })
+            res.cookie('token', token)
+            res.json(
+                {
+                    id: userFound?._id,
+                    userName: userFound?.userName,
+                    email: userFound?.email
+                }
+            )
 
-
-        res.cookie('token', token)
-        res.json(
-            {
-                id: userFound?._id,
-                userName: userFound?.userName,
-                email: userFound?.email
-            }
-        )
+        }
 
     } catch (error) {
-        return res.status(500).json({ message: error })
+        res.status(500).json({ message: error })
 
     }
 
-    return res.status(200).json({ message: 'login' })
 }
 
-
+export const logout = (_req: Request, res: Response) => {
+    res.cookie('token', "", { expires: new Date(0) })
+    res.status(200).json({ message: 'Logout success' })
+}
