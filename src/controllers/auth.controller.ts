@@ -2,7 +2,6 @@ import { Request, Response } from 'express'
 import User from '../models/User.model.js'
 import bcrypt from 'bcryptjs'
 import { createAccessToken } from '../lib/jwt.js'
-import { setHeapSnapshotNearHeapLimit } from 'v8'
 
 
 export const register = async (req: Request, res: Response) => {
@@ -38,24 +37,27 @@ export const register = async (req: Request, res: Response) => {
 
 }
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response): Promise<Response> => {
     const { email, password } = req.body
 
     try {
         const userFound = await User.findOne({ email })
         if (!userFound) return res.status(400).json({ message: 'User not found' })
 
+
         const isMatch = await bcrypt.compare(password, userFound?.password)
         if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' })
 
-        const token = await createAccessToken({ id: userFound._id })
+
+        const token = await createAccessToken({ id: userFound?._id })
+
 
         res.cookie('token', token)
-        return res.json(
+        res.json(
             {
-                id: userFound._id,
-                userName: userFound.userName,
-                email: userFound.email
+                id: userFound?._id,
+                userName: userFound?.userName,
+                email: userFound?.email
             }
         )
 
@@ -64,11 +66,7 @@ export const login = async (req: Request, res: Response) => {
 
     }
 
+    return res.status(200).json({ message: 'login' })
 }
 
 
-export const logout = async (req: Request, res: Response) => {
-    const { email } = req.body
-
-    email ? res.clearCookie('token') : res.send('no email')
-}
