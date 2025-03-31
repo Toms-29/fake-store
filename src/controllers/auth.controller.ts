@@ -4,6 +4,14 @@ import bcrypt from 'bcryptjs'
 import { createAccessToken } from '../lib/jwt.js'
 
 
+interface UserFound {
+    _id: string,
+    userName: string,
+    email: string,
+    createdAt: Date,
+    updatedAt: Date
+}
+
 export const register = async (req: Request, res: Response) => {
     const { userName, email, password } = req.body
 
@@ -72,4 +80,19 @@ export const login = async (req: Request, res: Response) => {
 export const logout = (_req: Request, res: Response) => {
     res.cookie('token', "", { expires: new Date(0) })
     res.status(200).json({ message: 'Logout success' })
+}
+
+export const profile = async (req: Request, res: Response) => {
+    const userFound = (await User.findById(req.user.id)) as UserFound
+
+    if (!userFound) res.status(400).json({ message: "User not found" })
+
+    res.json({
+        id: userFound?._id,
+        userName: userFound?.userName,
+        email: userFound?.email,
+        createdAt: userFound?.createdAt,
+        updatedAt: userFound?.updatedAt
+    })
+
 }
