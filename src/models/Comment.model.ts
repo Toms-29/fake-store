@@ -1,16 +1,17 @@
-import { modelOptions, prop } from "@typegoose/typegoose";
-import { Product } from "./Product.model.js"
-import { User } from "./User.model.js"
+import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Comment {
-    @prop({ ref: () => Product })
-    productId: Product
+    @prop({ ref: "Product" })
+    productId: string
 
-    @prop({ ref: () => User })
-    userId: User
+    @prop({ ref: "User" })
+    userId: string
 
     @prop()
     text: string
 
 }
+
+const CommentModel = getModelForClass(Comment)
+export default CommentModel                 

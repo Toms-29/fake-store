@@ -50,25 +50,21 @@ export const login = async (req: Request, res: Response) => {
 
     try {
         const userFound = await User.findOne({ email })
-        if (!userFound) res.status(400).json({ message: 'User not found' })
+        if (!userFound) { res.status(400).json({ message: 'User not found' }); return }
 
+        const isMatch = await bcrypt.compare(password, userFound?.password)
+        if (!isMatch) { res.status(400).json({ message: 'Invalid credentials' }); return }
 
-        if (userFound?.password) {
-            const isMatch = await bcrypt.compare(password, userFound?.password)
-            if (!isMatch) res.status(400).json({ message: 'Invalid credentials' })
+        const token = await createAccessToken({ id: userFound?._id })
 
-            const token = await createAccessToken({ id: userFound?._id })
-
-            res.cookie('token', token)
-            res.json(
-                {
-                    id: userFound?._id,
-                    userName: userFound?.userName,
-                    email: userFound?.email
-                }
-            )
-
-        }
+        res.cookie('token', token)
+        res.json(
+            {
+                id: userFound?._id,
+                userName: userFound?.userName,
+                email: userFound?.email
+            }
+        )
 
     } catch (error) {
         res.status(500).json({ message: error })
@@ -85,7 +81,7 @@ export const logout = (_req: Request, res: Response) => {
 export const profile = async (req: Request, res: Response) => {
     const userFound = (await User.findById(req.user.id)) as UserFound
 
-    if (!userFound) res.status(400).json({ message: "User not found" })
+    if (!userFound) { res.status(400).json({ message: "User not found" }); return }
 
     res.json({
         id: userFound?._id,

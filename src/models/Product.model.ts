@@ -1,5 +1,4 @@
 import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose"
-import {Comment} from "./Comment.model.js"
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Product {
@@ -9,8 +8,8 @@ export class Product {
     @prop()
     description: string
 
-    @prop({ type: () => [Comment] })
-    comment: Comment[]
+    @prop({ ref: "Comment" })
+    comment?: string[]
 
     @prop()
     price: number
