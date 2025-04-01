@@ -17,6 +17,9 @@ export class Product {
     @prop()
     calification: number
 
+    @prop()
+    amount: number
+
 }
 
 const ProductModel = getModelForClass(Product)
