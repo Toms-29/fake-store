@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes.js";
 import customerActionsRoutes from "./routes/customerActions.routes.js";
 import adminActionsRoutes from "./routes/adminActions.routes.js"
+import commentsManager from "./routes/commentsManager.routes.js"
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(cookieParser())
 app.use("/api", authRoutes)
 app.use("/api", customerActionsRoutes)
 app.use("/admin", adminActionsRoutes)
+app.use("/api", commentsManager)
 
 
 export default app;

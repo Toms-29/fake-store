@@ -4,9 +4,9 @@ import { getProducts, getProduct } from "../controllers/customerActions.controll
 
 const router = Router();
 
-router.get("/products/:productName", authRequired, getProducts)
+router.get("/products/productName/:productName", authRequired, getProducts)
 
-router.get("/products/:id", authRequired, getProduct)
+router.get("/products/id/:id", authRequired, getProduct)
 
 
 export default router

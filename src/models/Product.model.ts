@@ -2,22 +2,22 @@ import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose"
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Product {
-    @prop()
+    @prop({ required: true, trim: true, maxlength: 150 })
     productName: string
 
-    @prop()
+    @prop({ required: true, trim: true, maxlength: 500 })
     description: string
 
     @prop({ ref: "Comment" })
     comment?: string[]
 
-    @prop()
+    @prop({ required: true, trim: true })
     price: number
 
-    @prop()
+    @prop({ required: true, trim: true })
     calification: number
 
-    @prop()
+    @prop({ required: true, trim: true })
     amount: number
 
 }

@@ -2,13 +2,13 @@ import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Comment {
-    @prop({ ref: "Product" })
+    @prop({ ref: 'Product', required: true })
     productId: string
 
-    @prop({ ref: "User" })
+    @prop({ ref: 'User', required: true })
     userId: string
 
-    @prop()
+    @prop({ required: true, trim: true, maxlength: 200 })
     text: string
 
 }
