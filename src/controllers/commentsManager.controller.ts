@@ -28,7 +28,24 @@ export const addComment = async (req: Request, res: Response) => {
     }
 }
 
-// export const getComment = (req: Request, res: Response) => {
+export const getProductComments = async (req: Request, res: Response) => {
+    const { id } = req.params
+
+    console.log(id)
+
+    try {
+        const commentsFound = await Comment.find({ productId: id })
+        console.log(commentsFound)
+        if (!commentsFound) { res.status(400).json({ message: 'Comments not found' }); return }
+
+        res.json(commentsFound)
+    } catch (error) {
+        res.status(500).json({ message: error })
+    }
+
+}
+
+// export const getUserComments = (req: Request, res: Response) => {
 
 // }
 
