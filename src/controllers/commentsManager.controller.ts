@@ -39,11 +39,31 @@ export const getProductComments = async (req: Request, res: Response) => {
 
 }
 
-// export const getUserComments = (req: Request, res: Response) => {
+export const getUserComments = async (req: Request, res: Response) => {
+    const { id } = req.params
 
-// }
+    try {
+        const commentsFound = await Comment.find({ userId: id })
 
-// export const deleteComment = (req: Request, res: Response) => {
+        if (!commentsFound) { res.status(400).json({ message: 'Comments not found' }); return }
 
-// }
+        res.json(commentsFound)
+    } catch (error) {
+        res.status(500).json({ message: error })
+    }
+}
+
+export const deleteComment = async (req: Request, res: Response) => {
+    const { id } = req.params
+
+    try {
+        const commentsFound = await Comment.findByIdAndDelete(id)
+
+        if (!commentsFound) { res.status(400).json({ message: 'Comments not found' }); return }
+
+        res.json(commentsFound)
+    } catch (error) {
+        res.status(500).json({ message: error })
+    }
+}
 
