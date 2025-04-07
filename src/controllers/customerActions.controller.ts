@@ -7,18 +7,25 @@ export const getProducts = async (req: Request, res: Response) => {
 
     if (!productName) { res.status(400).json({ message: "Product no found" }); return }
 
-    const productsFound = await Product.find({ productName: productName })
+    try {
+        const productsFound = await Product.find({ productName: productName })
 
-    res.send(productsFound)
+        res.send(productsFound)
+    } catch (error) {
+        res.status(500).json({ message: error })
+    }
 }
 
 export const getProduct = async (req: Request, res: Response) => {
     const { id } = req.params;
-    console.log(id)
 
     if (!id) { res.status(400).json({ message: "Product no found" }); return }
 
-    const productFound = await Product.findById(id)
+    try {
+        const productFound = await Product.findById(id)
 
-    res.send(productFound)
+        res.send(productFound)
+    } catch (error) {
+        res.status(500).json({ message: error })
+    }
 }
