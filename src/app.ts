@@ -5,6 +5,7 @@ import authRoutes from "./routes/auth.routes.js";
 import customerActionsRoutes from "./routes/customerActions.routes.js";
 import adminActionsRoutes from "./routes/adminActions.routes.js"
 import commentsManager from "./routes/commentsManager.routes.js"
+import cartRoutes from "./routes/cart.routes.js"
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use("/api", authRoutes)
 app.use("/api", customerActionsRoutes)
 app.use("/admin", adminActionsRoutes)
 app.use("/api", commentsManager)
+app.use('/api', cartRoutes)
 
 
 export default app;

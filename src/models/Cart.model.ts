@@ -1,12 +1,23 @@
 import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose"
+import type { Ref } from "@typegoose/typegoose";
+import { User } from "./User.model.js"
+import { Product } from "./Product.model.js"
+
+class cartProduct {
+    @prop({ ref: () => Product, required: true })
+    productId: Ref<Product>
+
+    @prop({ required: true })
+    quantity: number
+}
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Cart {
-    @prop({ required: true, trim: true })
-    userId: string
+    @prop({ ref: () => User, required: true })
+    userId: Ref<User>
 
-    @prop({ ref: "CartOrder", required: true, trim: true })
-    products: string[]
+    @prop({ type: () => [cartProduct], required: true, _id: false })
+    products: cartProduct[]
 
     @prop({ required: true, trim: true })
     totalPrice: number
