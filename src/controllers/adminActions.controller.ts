@@ -23,7 +23,7 @@ export const addProduct = async (req: Request, res: Response) => {
             {
                 id: productSaved._id,
                 productName: productSaved.productName,
-                comment: productSaved.comment,
+                comments: productSaved.comments,
                 price: productSaved.price,
                 calification: productSaved.calification,
                 amount: productSaved.amount
