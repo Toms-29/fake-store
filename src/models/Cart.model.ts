@@ -21,7 +21,6 @@ export class Cart {
 
     @prop({ required: true, trim: true })
     totalPrice: number
-
 }
 
 const CartModel = getModelForClass(Cart)

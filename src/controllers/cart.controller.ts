@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import Cart from "../models/Cart.model.js";
 import Product from "../models/Product.model.js";
+import { OrderType } from "../types/cart.types.js";
 
 
 export const addOrUpdateCart = async (req: Request, res: Response) => {
     const { id } = req.params
     const { quantity } = req.body
     const userId = req.user.id
-
 
     const newProduct = {
         productId: id,
@@ -21,7 +21,8 @@ export const addOrUpdateCart = async (req: Request, res: Response) => {
         const subtotalPrice = productFound.price * quantity
 
 
-        const orderFound = await Cart.findOne({ userId: userId })
+        const orderFound = await Cart.findOne({ userId: userId }).populate("products.productId").lean() as OrderType
+
 
         if (!orderFound) {
             const newCart = new Cart({
@@ -34,9 +35,10 @@ export const addOrUpdateCart = async (req: Request, res: Response) => {
 
             res.status(201).json(cartSaved)
         } else {
-            const productNotRepit = orderFound.products.filter((product => product.productId.toString() === id))
+            const productNotRepit = orderFound.products.filter((product => product.productId._id.toString() === id))
 
-            if (productNotRepit.length === 1) {
+
+            if (productNotRepit.length >= 1) {
                 const oldPrice = productFound.price * productNotRepit[0].quantity
 
                 const updatedProduct = await Cart.updateOne(
@@ -68,7 +70,6 @@ export const addOrUpdateCart = async (req: Request, res: Response) => {
     }
 
 }
-
 
 
 export const deletCartItem = async (req: Request, res: Response) => {
