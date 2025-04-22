@@ -8,7 +8,8 @@ export const getProducts = async (req: Request, res: Response) => {
     if (!productName) { res.status(400).json({ message: "Product no found" }); return }
 
     try {
-        const productsFound = await Product.find({ productName: productName })
+        const productsFound = await Product.find({ productName: productName }).populate('comments', 'text userId -_id').lean()
+        if (!productsFound) { res.status(404).json({ message: "Product not found" }); return }
 
         res.send(productsFound)
     } catch (error) {
@@ -22,7 +23,8 @@ export const getProduct = async (req: Request, res: Response) => {
     if (!id) { res.status(400).json({ message: "Product no found" }); return }
 
     try {
-        const productFound = await Product.findById(id)
+        const productFound = await Product.findById(id).populate('comments', 'text userId -_id').lean()
+        if (!productFound) { res.status(404).json({ message: "Product not found" }); return }
 
         res.send(productFound)
     } catch (error) {

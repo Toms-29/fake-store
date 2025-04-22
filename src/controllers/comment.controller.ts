@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import Comment from "../models/Comment.model.js"
+import Product from "../models/Product.model.js"
 
 export const addComment = async (req: Request, res: Response) => {
     const { productId } = req.params
@@ -16,7 +17,14 @@ export const addComment = async (req: Request, res: Response) => {
 
         const commentSaved = await newComment.save()
 
-        res.send(commentSaved)
+        await Product.findByIdAndUpdate(
+            productId,
+            {
+                $push: { comments: commentSaved._id }
+            }
+        )
+
+        res.status(201).json(commentSaved)
 
     } catch (error) {
         res.status(500).json({ message: error })
@@ -58,8 +66,14 @@ export const deleteComment = async (req: Request, res: Response) => {
 
     try {
         const commentsFound = await Comment.findByIdAndDelete(id)
-
         if (!commentsFound) { res.status(400).json({ message: 'Comments not found' }); return }
+
+        await Product.findOneAndUpdate(
+            { comments: id },
+            {
+                $pull: { comments: id }
+            }
+        )
 
         res.json(commentsFound)
     } catch (error) {
