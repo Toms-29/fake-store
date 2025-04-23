@@ -5,6 +5,7 @@ import authRoutes from "./routes/auth.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import commentRoutes from "./routes/comment.routes.js"
 import cartRoutes from "./routes/cart.routes.js"
+import userRoutes from "./routes/user.routes.js"
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use("/api", authRoutes)
 app.use("/api", productRoutes)
 app.use("/api", commentRoutes)
 app.use('/api', cartRoutes)
+app.use('/api', userRoutes)
 
 
 export default app;

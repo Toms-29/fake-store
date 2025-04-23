@@ -25,6 +25,8 @@ export const register = async (req: Request, res: Response) => {
                 password: passwordHash
             }
         )
+        if (!newUser) { res.status(400).json({ message: 'Invalid data' }); return }
+
 
         const userSaved = await newUser.save()
         const token = await createAccessToken({ id: userSaved._id })
