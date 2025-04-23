@@ -39,8 +39,8 @@ export const updateUser = async (req: Request, res: Response) => {
                 password
             },
             { new: true }
-        )
-        if (!updatedUser) { res.status(404).json({ message: "Product not found" }); return }
+        ).select({ password: false })
+        if (!updatedUser) { res.status(404).json({ message: "User not found" }); return }
 
         res.status(200).json(updatedUser)
     } catch (error) {

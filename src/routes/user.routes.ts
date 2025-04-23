@@ -8,7 +8,7 @@ router.get("/user", authRequired, getUser)
 
 router.get("/user/users", authRequired, getUsers)
 
-router.put("/user/updete", authRequired, updateUser)
+router.put("/user/update", authRequired, updateUser)
 
 router.delete("/user/delete", authRequired, deleteUser)
 
