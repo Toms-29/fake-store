@@ -8,7 +8,7 @@ export const getCart = async (req: Request, res: Response) => {
     const userId = req.user.id
 
     try {
-        const cartFound = await Cart.findOne({ userId: userId })
+        const cartFound = await Cart.findOne({ userId: userId }).populate("products.productId", "productName price").lean()
         if (!cartFound) { res.status(404).json({ message: "Cart not found" }); return; }
 
         res.status(200).json(cartFound)

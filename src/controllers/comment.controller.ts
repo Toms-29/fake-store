@@ -36,7 +36,7 @@ export const getProductComments = async (req: Request, res: Response) => {
     const { id } = req.params
 
     try {
-        const commentsFound = await Comment.find({ productId: id })
+        const commentsFound = await Comment.find({ productId: id }).populate("productId","productName").lean()
 
         if (!commentsFound) { res.status(400).json({ message: 'Comments not found' }); return }
 
@@ -51,7 +51,7 @@ export const getUserComments = async (req: Request, res: Response) => {
     const { id } = req.params
 
     try {
-        const commentsFound = await Comment.find({ userId: id })
+        const commentsFound = await Comment.find({ userId: id }).populate("userId", "userName").lean()
 
         if (!commentsFound) { res.status(400).json({ message: 'Comments not found' }); return }
 
@@ -80,4 +80,3 @@ export const deleteComment = async (req: Request, res: Response) => {
         res.status(500).json({ message: error })
     }
 }
-
