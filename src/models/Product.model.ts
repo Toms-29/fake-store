@@ -1,6 +1,7 @@
 import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose"
 import type { Ref } from "@typegoose/typegoose"
 import { Comment } from "./Comment.model.js"
+import { ProductStatus } from "../types/product.types.js"
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Product {
@@ -21,6 +22,9 @@ export class Product {
 
     @prop({ required: true, trim: true })
     amount: number
+
+    @prop({ required: true, enum: ProductStatus, default: ProductStatus.IN_STOCK })
+    status: ProductStatus
 
 }
 
