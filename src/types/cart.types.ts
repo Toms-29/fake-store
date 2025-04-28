@@ -1,6 +1,6 @@
 import { Types } from "mongoose"
 
-export type OrderType = {
+export type CartType = {
     _id: string | Types.ObjectId,
     userId: string | Types.ObjectId,
     products: ProductsType[],
