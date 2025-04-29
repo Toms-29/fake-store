@@ -86,7 +86,6 @@ export const updateCart = async (req: Request, res: Response) => {
 
         if (productInCart) {
             const oldPrice = productFound.price * productInCart.quantity
-            console.log(oldPrice)
 
             const updatedProduct = await Cart.updateOne(
                 { userId: userId, "products.productId": id },
