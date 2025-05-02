@@ -112,16 +112,16 @@ export const deletCartItem = async (req: Request, res: Response) => {
     const productFound = await Product.findById(id)
     if (!productFound) { res.status(404).json({ message: "Product not found" }); return; }
 
-    const orderFound = await Cart.findOne({ userId: userId })
-    if (!orderFound) { res.status(404).json({ message: "Cart not found" }); return; }
+    const cartFound = await Cart.findOne({ userId: userId })
+    if (!cartFound) { res.status(404).json({ message: "Cart not found" }); return; }
 
-    const productInCart = orderFound.products.filter((product => product.productId.toString() === id))
+    const productInCart = cartFound.products.filter((product => product.productId.toString() === id))
 
     try {
         const updatedCart = await Cart.updateOne(
             { userId: userId },
             {
-                $set: { totalPrice: orderFound.totalPrice - productFound.price * productInCart[0].quantity },
+                $set: { totalPrice: cartFound.totalPrice - productFound.price * productInCart[0].quantity },
                 $pull: { products: { productId: id } }
             },
             { new: true }
