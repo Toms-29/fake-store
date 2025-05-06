@@ -29,14 +29,15 @@ export const register = async (req: Request, res: Response) => {
 
 
         const userSaved = await newUser.save()
-        const token = await createAccessToken({ id: userSaved._id })
+        const token = await createAccessToken({ id: userSaved._id, role: userSaved.role })
 
         res.cookie('token', token)
         res.json(
             {
                 id: userSaved._id,
                 userName: userSaved.userName,
-                email: userSaved.email
+                email: userSaved.email,
+                role: userSaved.role
             }
         )
 
@@ -57,14 +58,15 @@ export const login = async (req: Request, res: Response) => {
         const isMatch = await bcrypt.compare(password, userFound?.password)
         if (!isMatch) { res.status(400).json({ message: 'Invalid credentials' }); return }
 
-        const token = await createAccessToken({ id: userFound?._id })
+        const token = await createAccessToken({ id: userFound._id, role: userFound.role })
 
         res.cookie('token', token)
         res.json(
             {
                 id: userFound?._id,
                 userName: userFound?.userName,
-                email: userFound?.email
+                email: userFound?.email,
+                role: userFound?.role
             }
         )
 
