@@ -18,4 +18,6 @@ export type ProductType = {
     comments: [],
     price: number,
     calification: number
+    amount: number,
+    status: string
 }
