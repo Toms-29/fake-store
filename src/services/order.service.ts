@@ -1,21 +1,6 @@
 import Product from "../models/Product.model.js"
+import { HttpError } from "../errors/HttpError.js"
 import { ProductStatus } from "../types/product.types.js"
-
-export const verifyAmount = async (id: string, quantity: number, amount: number) => {
-    try {
-        if (quantity < amount) ({ message: "Amount not available" })
-
-        const amountUpdated = await Product.findOneAndUpdate(
-            { userId: id },
-            { $inc: { amount: - quantity } },
-            { new: true }
-        ).lean()
-
-        return amountUpdated
-    } catch (error) {
-        return error
-    }
-}
 
 export const verifySatus = async (id: string, amount: number) => {
     if (amount === 0) {
@@ -27,7 +12,7 @@ export const verifySatus = async (id: string, amount: number) => {
             )
             return statusUpdated
         } catch (error) {
-            return error
+            throw new HttpError("Internal server error", 500)
         }
     } else { return }
 }

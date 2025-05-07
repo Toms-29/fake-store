@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import Cart from "../models/Cart.model.js";
 import Product from "../models/Product.model.js";
-import { verifyCartExist, verifyProductInCrat } from "../services/cart.service.js";
-import { CartType, ProductsType } from "../types/cart.types.js";
+import { HttpError } from "../errors/HttpError.js";
+import { verifyCartExist, verifyProductExist, verifyProductInCrat } from "../services/cart.service.js";
+import { CartType, ProductsType, ProductType } from "../types/cart.types.js";
 
 
 export const getCart = async (req: Request, res: Response) => {
@@ -31,8 +32,7 @@ export const addToCart = async (req: Request, res: Response) => {
     try {
         const cartExist = await verifyCartExist(userId) as CartType
 
-        const productFound = await Product.findById(id)
-        if (!productFound) { res.status(404).json({ message: "Product not found" }); return }
+        const productFound = await verifyProductExist(id) as ProductType
 
         const subtotalPrice = productFound.price * quantity
 
@@ -59,13 +59,14 @@ export const addToCart = async (req: Request, res: Response) => {
                 )
                 res.status(200).json(addToCart); return;
             } else {
-                res.status(400).json({ message: "Product already in cart" }); return;
+                throw new HttpError("Product already in cart", 409)
             }
         }
     } catch (error) {
-        res.status(500).json({ message: error })
+        const statusCode = error instanceof HttpError ? error.statusCode : 500
+        const message = error instanceof HttpError ? error.message : "Internal server error"
+        res.status(statusCode).json({ message })
     }
-
 }
 
 export const updateCart = async (req: Request, res: Response) => {
@@ -75,10 +76,8 @@ export const updateCart = async (req: Request, res: Response) => {
 
     try {
         const cartExist = await verifyCartExist(userId) as CartType
-        if (!cartExist) { res.status(404).json({ message: "Cart not found" }); return; }
 
-        const productFound = await Product.findById(id)
-        if (!productFound) { res.status(404).json({ message: "Product not found" }); return; }
+        const productFound = await verifyProductExist(id) as ProductType
 
         const subtotalPrice = productFound.price * quantity
 
