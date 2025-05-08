@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import Cart from "../models/Cart.model.js";
 import Product from "../models/Product.model.js";
 import { HttpError } from "../errors/HttpError.js";
@@ -6,7 +6,7 @@ import { verifyCartExist, verifyProductExist, verifyProductInCrat } from "../ser
 import { CartType, ProductsType, ProductType } from "../types/cart.types.js";
 
 
-export const getCart = async (req: Request, res: Response) => {
+export const getCart = async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user.id
 
     try {
@@ -15,11 +15,11 @@ export const getCart = async (req: Request, res: Response) => {
 
         res.status(200).json(cartFound)
     } catch (error) {
-        res.status(500).json({ message: error })
+        next(error)
     }
 }
 
-export const addToCart = async (req: Request, res: Response) => {
+export const addToCart = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params
     const { quantity } = req.body
     const userId = req.user.id
@@ -63,13 +63,11 @@ export const addToCart = async (req: Request, res: Response) => {
             }
         }
     } catch (error) {
-        const statusCode = error instanceof HttpError ? error.statusCode : 500
-        const message = error instanceof HttpError ? error.message : "Internal server error"
-        res.status(statusCode).json({ message })
+        next(error)
     }
 }
 
-export const updateCart = async (req: Request, res: Response) => {
+export const updateCart = async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user.id
     const { id } = req.params
     const { quantity } = req.body
@@ -100,11 +98,11 @@ export const updateCart = async (req: Request, res: Response) => {
             res.status(404).json({ message: "Product not found in cart" }); return;
         }
     } catch (error) {
-        res.status(500).json({ message: error })
+        next(error)
     }
 }
 
-export const deletCartItem = async (req: Request, res: Response) => {
+export const deletCartItem = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params
     const userId = req.user.id
 
@@ -131,11 +129,11 @@ export const deletCartItem = async (req: Request, res: Response) => {
         res.status(200).json(updatedCart)
 
     } catch (error) {
-        res.status(500).json({ message: error })
+        next(error)
     }
 }
 
-export const deleteCart = async (req: Request, res: Response) => {
+export const deleteCart = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params
 
     try {
@@ -143,8 +141,7 @@ export const deleteCart = async (req: Request, res: Response) => {
         if (!cartDeleted) { res.status(404).json({ message: "Cart not found" }); return; }
 
         res.status(200).json(cartDeleted)
-
     } catch (error) {
-        res.status(500).json({ message: error })
+        next(error)
     }
 }

@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import User from '../models/User.model.js'
 import bcrypt from 'bcryptjs'
 import { createAccessToken } from '../lib/jwt.js'
@@ -12,7 +12,7 @@ interface UserFound {
     updatedAt: Date
 }
 
-export const register = async (req: Request, res: Response) => {
+export const register = async (req: Request, res: Response, next: NextFunction) => {
     const { userName, email, password } = req.body
 
     try {
@@ -26,9 +26,8 @@ export const register = async (req: Request, res: Response) => {
             }
         )
         if (!newUser) { res.status(400).json({ message: 'Invalid data' }); return }
-
-
         const userSaved = await newUser.save()
+
         const token = await createAccessToken({ id: userSaved._id, role: userSaved.role })
 
         res.cookie('token', token)
@@ -40,15 +39,12 @@ export const register = async (req: Request, res: Response) => {
                 role: userSaved.role
             }
         )
-
     } catch (error) {
-        res.status(500).json({ message: error })
-
+        next(error)
     }
-
 }
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body
 
     try {
@@ -69,12 +65,9 @@ export const login = async (req: Request, res: Response) => {
                 role: userFound?.role
             }
         )
-
     } catch (error) {
-        res.status(500).json({ message: error })
-
+        next(error)
     }
-
 }
 
 export const logout = (_req: Request, res: Response) => {
@@ -82,7 +75,7 @@ export const logout = (_req: Request, res: Response) => {
     res.status(200).json({ message: 'Logout success' })
 }
 
-export const profile = async (req: Request, res: Response) => {
+export const profile = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userFound = (await User.findById(req.user.id)) as UserFound
 
@@ -96,6 +89,6 @@ export const profile = async (req: Request, res: Response) => {
             updatedAt: userFound?.updatedAt
         })
     } catch (error) {
-        res.status(500).json({ message: error })
+        next(error)
     }
 }

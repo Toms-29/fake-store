@@ -1,7 +1,7 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import User from "../models/User.model.js";
 
-export const getUser = async (req: Request, res: Response) => {
+export const getUser = async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = req.body
 
     try {
@@ -10,11 +10,11 @@ export const getUser = async (req: Request, res: Response) => {
 
         res.status(200).json(userFound)
     } catch (error) {
-        res.status(500).json({ message: error })
+        next(error)
     }
 }
 
-export const getUsers = async (req: Request, res: Response) => {
+export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
     const { userName } = req.body
 
     try {
@@ -23,11 +23,11 @@ export const getUsers = async (req: Request, res: Response) => {
 
         res.status(200).json(usersFound)
     } catch (error) {
-        res.status(500).json({ message: error })
+        next(error)
     }
 }
 
-export const updateUser = async (req: Request, res: Response) => {
+export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     const { userId, email, userName, password } = req.body
 
     try {
@@ -44,11 +44,11 @@ export const updateUser = async (req: Request, res: Response) => {
 
         res.status(200).json(updatedUser)
     } catch (error) {
-        res.status(500).json({ message: error })
+        next(error)
     }
 }
 
-export const deleteUser = async (req: Request, res: Response) => {
+export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = req.body
 
     try {
@@ -57,6 +57,6 @@ export const deleteUser = async (req: Request, res: Response) => {
 
         res.status(200).json({ message: "User deleted" })
     } catch (error) {
-        res.status(500).json({ message: error })
+        next(error)
     }
 }

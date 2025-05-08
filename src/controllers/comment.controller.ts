@@ -1,8 +1,8 @@
-import { Request, Response } from "express"
+import { Request, Response, NextFunction } from "express"
 import Comment from "../models/Comment.model.js"
 import Product from "../models/Product.model.js"
 
-export const addComment = async (req: Request, res: Response) => {
+export const addComment = async (req: Request, res: Response, next: NextFunction) => {
     const { productId } = req.params
     const { text } = req.body
 
@@ -14,7 +14,6 @@ export const addComment = async (req: Request, res: Response) => {
                 text
             }
         )
-
         const commentSaved = await newComment.save()
 
         await Product.findByIdAndUpdate(
@@ -25,43 +24,38 @@ export const addComment = async (req: Request, res: Response) => {
         )
 
         res.status(201).json(commentSaved)
-
     } catch (error) {
-        res.status(500).json({ message: error })
-
+        next(error)
     }
 }
 
-export const getProductComments = async (req: Request, res: Response) => {
+export const getProductComments = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params
 
     try {
-        const commentsFound = await Comment.find({ productId: id }).populate("productId","productName").lean()
-
+        const commentsFound = await Comment.find({ productId: id }).populate("productId", "productName").lean()
         if (!commentsFound) { res.status(400).json({ message: 'Comments not found' }); return }
 
         res.json(commentsFound)
     } catch (error) {
-        res.status(500).json({ message: error })
+        next(error)
     }
-
 }
 
-export const getUserComments = async (req: Request, res: Response) => {
+export const getUserComments = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params
 
     try {
         const commentsFound = await Comment.find({ userId: id }).populate("userId", "userName").lean()
-
         if (!commentsFound) { res.status(400).json({ message: 'Comments not found' }); return }
 
         res.json(commentsFound)
     } catch (error) {
-        res.status(500).json({ message: error })
+        next(error)
     }
 }
 
-export const deleteComment = async (req: Request, res: Response) => {
+export const deleteComment = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params
 
     try {
@@ -77,6 +71,6 @@ export const deleteComment = async (req: Request, res: Response) => {
 
         res.json(commentsFound)
     } catch (error) {
-        res.status(500).json({ message: error })
+        next(error)
     }
 }

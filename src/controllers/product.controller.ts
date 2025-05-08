@@ -1,11 +1,9 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import Product from '../models/Product.model.js';
 
 
-export const getProducts = async (req: Request, res: Response) => {
+export const getProducts = async (req: Request, res: Response, next: NextFunction) => {
     const { productName } = req.params;
-
-    if (!productName) { res.status(400).json({ message: "Product no found" }); return }
 
     try {
         const productsFound = await Product.find({ productName: productName }).populate('comments', 'text userId -_id').lean()
@@ -13,14 +11,12 @@ export const getProducts = async (req: Request, res: Response) => {
 
         res.send(productsFound)
     } catch (error) {
-        res.status(500).json({ message: error })
+        next(error)
     }
 }
 
-export const getProduct = async (req: Request, res: Response) => {
+export const getProduct = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
-
-    if (!id) { res.status(400).json({ message: "Product no found" }); return }
 
     try {
         const productFound = await Product.findById(id).populate('comments', 'text userId -_id').lean()
@@ -28,12 +24,11 @@ export const getProduct = async (req: Request, res: Response) => {
 
         res.send(productFound)
     } catch (error) {
-        res.status(500).json({ message: error })
+        next(error)
     }
 }
 
-export const addProduct = async (req: Request, res: Response) => {
-
+export const addProduct = async (req: Request, res: Response, next: NextFunction) => {
     const { productName, description, comments, price, calification, amount } = req.body
 
     try {
@@ -47,7 +42,6 @@ export const addProduct = async (req: Request, res: Response) => {
                 amount
             }
         )
-
         const productSaved = await newProduct.save()
 
         res.json(
@@ -60,15 +54,12 @@ export const addProduct = async (req: Request, res: Response) => {
                 amount: productSaved.amount
             }
         )
-
     } catch (error) {
-        res.status(500).json({ message: error })
-
+        next(error)
     }
-
 }
 
-export const updateProduct = async (req: Request, res: Response) => {
+export const updateProduct = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params
     const { productName, description, price, calification, amount } = req.body
 
@@ -88,12 +79,11 @@ export const updateProduct = async (req: Request, res: Response) => {
 
         res.status(200).json(updatedProduct)
     } catch (error) {
-        res.status(500).json({ message: error })
+        next(error)
     }
-
 }
 
-export const deleteProduct = async (req: Request, res: Response) => {
+export const deleteProduct = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params
 
     try {
@@ -101,8 +91,7 @@ export const deleteProduct = async (req: Request, res: Response) => {
         if (!deletedProduct) { res.status(404).json({ message: "Product not found" }); return }
 
         res.status(200).json({ message: "Product deleted" })
-
     } catch (error) {
-        res.status(500).json({ message: error })
+        next(error)
     }
 }
