@@ -21,3 +21,9 @@ export type ProductType = {
     amount: number,
     status: string
 }
+
+export enum CartStatus {
+    CONFIRMED = 'confirmed',
+    PENDING = 'pending',
+    REJECTED = 'rejected'
+}

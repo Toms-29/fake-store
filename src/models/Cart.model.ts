@@ -2,6 +2,7 @@ import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose"
 import type { Ref } from "@typegoose/typegoose";
 import { User } from "./User.model.js"
 import { Product } from "./Product.model.js"
+import { CartStatus } from "../types/cart.types.js";
 
 class cartProduct {
     @prop({ ref: () => Product, required: true })
@@ -21,6 +22,9 @@ export class Cart {
 
     @prop({ required: true, trim: true })
     totalPrice: number
+
+    @prop({ required: true, enum: CartStatus, default: CartStatus.PENDING })
+    status: CartStatus
 }
 
 const CartModel = getModelForClass(Cart)

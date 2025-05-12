@@ -17,6 +17,9 @@ export class Product {
     @prop({ required: true, trim: true })
     price: number
 
+    @prop()
+    images: string[]
+
     @prop({ required: true, trim: true })
     calification: number
 
