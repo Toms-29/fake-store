@@ -12,5 +12,6 @@ const getEnvValue = (key: string): string => {
 export const ENV = {
     PORT: Number(process.env.PORT) || 4000,
     DB_URI: getEnvValue('DB_URI'),
-    SECRET_TOKEN_KEY: getEnvValue('SECRET_TOKEN_KEY')
+    SECRET_TOKEN_KEY: getEnvValue('SECRET_TOKEN_KEY'),
+    STRIPE_SECRET_KEY: getEnvValue('STRIPE_SECRET_KEY')
 }

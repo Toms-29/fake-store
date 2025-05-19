@@ -8,6 +8,7 @@ import commentRoutes from "./routes/comment.routes.js"
 import cartRoutes from "./routes/cart.routes.js"
 import userRoutes from "./routes/user.routes.js"
 import roleRoutes from './routes/role.routes.js'
+import paymentRoutes from "./routes/payment.routes.js"
 
 import { errorHandler } from "./middlewares/errorHandler.js";
 
@@ -23,6 +24,7 @@ app.use("/api", commentRoutes)
 app.use('/api', cartRoutes)
 app.use('/api', userRoutes)
 app.use('/api', roleRoutes)
+app.use('/api', paymentRoutes)
 
 app.use(errorHandler)
 

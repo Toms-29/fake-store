@@ -14,6 +14,7 @@ export type ProductsType = {
 
 export type ProductType = {
     _id: string | Types.ObjectId,
+    productName: string,
     description: string,
     comments?: Types.ObjectId[],
     price: number,
