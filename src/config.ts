@@ -1,1 +1,0 @@
-export const SECRET_TOKEN_KEY = 'clavetoken123'
