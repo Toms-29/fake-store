@@ -11,17 +11,14 @@ const stripe = new Stripe(ENV.STRIPE_SECRET_KEY)
 
 export const createCheckoutSession = async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user.id
-    console.log('hecho 1')
     
     try {
         const cart = await Cart.findOne({ userId: userId })
         if (!cart) { throw new HttpError('Cart not found', 404) }
-        console.log('hecho 2')
         
         const listProducts = await Promise.all(cart?.products.map(async (productList) => {
             let product = await Product.findById(productList.productId) as ProductType
             if (!product) { throw new HttpError('Product not found', 404) }
-            console.log('hecho 3')
             
             return {
                 price_data: {
@@ -36,7 +33,6 @@ export const createCheckoutSession = async (req: Request, res: Response, next: N
             }
         }))
         if (listProducts.length === 0) { throw new HttpError('Cart is empty', 400) }
-        console.log('hecho 4')
         
         const session = await stripe.checkout.sessions.create({
             line_items: listProducts,
@@ -44,7 +40,6 @@ export const createCheckoutSession = async (req: Request, res: Response, next: N
             success_url: "http://localhost:4000",
             cancel_url: "http://localhost:4000"
         })
-        console.log('hecho 5')
         
         res.status(200).json(session)
     } catch (error) {
