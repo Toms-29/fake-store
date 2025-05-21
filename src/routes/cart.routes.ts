@@ -6,13 +6,13 @@ const router = Router()
 
 router.get('/cart', authRequired, getCart)
 
-router.post('/cart/product/id/:id', authRequired, addToCart)
+router.post('/cart/product/id/:productId', authRequired, addToCart)
 
-router.put('/cart/product/id/:id', authRequired, updateCart)
+router.put('/cart/product/id/:productId', authRequired, updateCart)
 
-router.delete('/cart/delete/product/id/:id', authRequired, deletCartItem)
+router.delete('/cart/delete/product/id/:productId', authRequired, deletCartItem)
 
-router.delete('/cart/delete/cart/:id', authRequired, deleteCart)
+router.delete('/cart/delete/cart/:cartId', authRequired, deleteCart)
 
 
 export default router

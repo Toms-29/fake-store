@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+
 import Cart from "../models/Cart.model.js";
 import Product from "../models/Product.model.js";
 import { HttpError } from "../errors/HttpError.js";
@@ -20,19 +21,19 @@ export const getCart = async (req: Request, res: Response, next: NextFunction) =
 }
 
 export const addToCart = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params
-    const { quantity } = req.body
     const userId = req.user.id
+    const { productId } = req.params
+    const { quantity } = req.body
 
     const newProduct = {
-        productId: id,
+        productId: productId,
         quantity: quantity
     }
 
     try {
         const cartExist = await verifyCartExist(userId) as CartType
 
-        const productFound = await verifyProductExist(id) as ProductType
+        const productFound = await verifyProductExist(productId) as ProductType
 
         const subtotalPrice = productFound.price * quantity
 
@@ -47,7 +48,7 @@ export const addToCart = async (req: Request, res: Response, next: NextFunction)
 
             res.status(201).json(cartSaved)
         } else {
-            const productInCart = verifyProductInCrat(cartExist, id)
+            const productInCart = verifyProductInCrat(cartExist, productId)
 
             if (!productInCart) {
                 const addToCart = await Cart.updateOne(
@@ -69,23 +70,23 @@ export const addToCart = async (req: Request, res: Response, next: NextFunction)
 
 export const updateCart = async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user.id
-    const { id } = req.params
+    const { productId } = req.params
     const { quantity } = req.body
 
     try {
         const cartExist = await verifyCartExist(userId) as CartType
 
-        const productFound = await verifyProductExist(id) as ProductType
+        const productFound = await verifyProductExist(productId) as ProductType
 
         const subtotalPrice = productFound.price * quantity
 
-        const productInCart = verifyProductInCrat(cartExist, id) as ProductsType
+        const productInCart = verifyProductInCrat(cartExist, productId) as ProductsType
 
         if (productInCart) {
             const oldPrice = productFound.price * productInCart.quantity
 
             const updatedProduct = await Cart.updateOne(
-                { userId: userId, "products.productId": id },
+                { userId: userId, "products.productId": productId },
                 {
                     $set: {
                         "products.$.quantity": quantity,
@@ -103,41 +104,39 @@ export const updateCart = async (req: Request, res: Response, next: NextFunction
 }
 
 export const deletCartItem = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params
     const userId = req.user.id
+    const { productId } = req.params
 
-    const productFound = await Product.findById(id)
+    const productFound = await Product.findById(productId)
     if (!productFound) { res.status(404).json({ message: "Product not found" }); return; }
 
     const cartFound = await Cart.findOne({ userId: userId })
     if (!cartFound) { res.status(404).json({ message: "Cart not found" }); return; }
 
-    const productInCart = cartFound.products.filter((product => product.productId.toString() === id))
+    const productInCart = cartFound.products.filter((product => product.productId.toString() === productId))
 
     try {
         const updatedCart = await Cart.updateOne(
             { userId: userId },
             {
                 $set: { totalPrice: cartFound.totalPrice - productFound.price * productInCart[0].quantity },
-                $pull: { products: { productId: id } }
+                $pull: { products: { productId: productId } }
             },
             { new: true }
         )
-
         if (!updatedCart) { res.status(404).json({ message: "Cart not found" }); return; }
 
         res.status(200).json(updatedCart)
-
     } catch (error) {
         next(error)
     }
 }
 
 export const deleteCart = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params
+    const { cartId } = req.params
 
     try {
-        const cartDeleted = await Cart.findByIdAndDelete(id)
+        const cartDeleted = await Cart.findByIdAndDelete(cartId)
         if (!cartDeleted) { res.status(404).json({ message: "Cart not found" }); return; }
 
         res.status(200).json(cartDeleted)

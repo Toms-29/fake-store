@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express"
+
 import Comment from "../models/Comment.model.js"
 import Product from "../models/Product.model.js"
 
@@ -30,10 +31,10 @@ export const addComment = async (req: Request, res: Response, next: NextFunction
 }
 
 export const getProductComments = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params
+    const { productId } = req.params
 
     try {
-        const commentsFound = await Comment.find({ productId: id }).populate("productId", "productName").lean()
+        const commentsFound = await Comment.find({ productId: productId }).populate("productId", "productName").lean()
         if (!commentsFound) { res.status(400).json({ message: 'Comments not found' }); return }
 
         res.json(commentsFound)
@@ -43,10 +44,10 @@ export const getProductComments = async (req: Request, res: Response, next: Next
 }
 
 export const getUserComments = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params
+    const userId = req.user.id
 
     try {
-        const commentsFound = await Comment.find({ userId: id }).populate("userId", "userName").lean()
+        const commentsFound = await Comment.find({ userId: userId }).populate("userId", "userName").lean()
         if (!commentsFound) { res.status(400).json({ message: 'Comments not found' }); return }
 
         res.json(commentsFound)

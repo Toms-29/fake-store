@@ -1,16 +1,8 @@
 import { NextFunction, Request, Response } from 'express'
-import User from '../models/User.model.js'
 import bcrypt from 'bcryptjs'
+
+import User from '../models/User.model.js'
 import { createAccessToken } from '../lib/jwt.js'
-
-
-interface UserFound {
-    _id: string,
-    userName: string,
-    email: string,
-    createdAt: Date,
-    updatedAt: Date
-}
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
     const { userName, email, password } = req.body
@@ -31,14 +23,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         const token = await createAccessToken({ id: userSaved._id, role: userSaved.role })
 
         res.cookie('token', token)
-        res.json(
-            {
-                id: userSaved._id,
-                userName: userSaved.userName,
-                email: userSaved.email,
-                role: userSaved.role
-            }
-        )
+        res.json(userSaved)
     } catch (error) {
         next(error)
     }
@@ -57,14 +42,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         const token = await createAccessToken({ id: userFound._id, role: userFound.role })
 
         res.cookie('token', token)
-        res.json(
-            {
-                id: userFound?._id,
-                userName: userFound?.userName,
-                email: userFound?.email,
-                role: userFound?.role
-            }
-        )
+        res.json(userFound)
     } catch (error) {
         next(error)
     }
@@ -76,18 +54,13 @@ export const logout = (_req: Request, res: Response) => {
 }
 
 export const profile = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const userFound = (await User.findById(req.user.id)) as UserFound
+    const userId = req.user.id
 
+    try {
+        const userFound = await User.findById(userId)
         if (!userFound) { res.status(400).json({ message: "User not found" }); return }
 
-        res.json({
-            id: userFound?._id,
-            userName: userFound?.userName,
-            email: userFound?.email,
-            createdAt: userFound?.createdAt,
-            updatedAt: userFound?.updatedAt
-        })
+        res.json(userFound)
     } catch (error) {
         next(error)
     }

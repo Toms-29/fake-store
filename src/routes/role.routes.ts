@@ -9,9 +9,9 @@ router.get('/role/requests/userId/:userId', authRequired, roleVerify, getRequest
 
 router.get('/role/requests', authRequired, roleVerify, getRequestsRoleChange)
 
-router.get('/role/requests/aceptRequest', authRequired, roleVerify, aceptRoleChange)
+router.get('/role/requests/aceptRequest/:requestId', authRequired, roleVerify, aceptRoleChange)
 
-router.get('/role/requests/rejectedRequest', authRequired, roleVerify, rejectRoleChange)
+router.get('/role/requests/rejectRequest/:requestId', authRequired, roleVerify, rejectRoleChange)
 
 router.get('/role/requests/createRequest', authRequired, roleVerify, requestRoleChange)
 

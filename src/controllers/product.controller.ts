@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import Product from '../models/Product.model.js';
 
+import Product from '../models/Product.model.js';
 
 export const getProducts = async (req: Request, res: Response, next: NextFunction) => {
     const { productName } = req.params;
@@ -16,10 +16,10 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
 }
 
 export const getProduct = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
+    const { productId } = req.params;
 
     try {
-        const productFound = await Product.findById(id).populate('comments', 'text userId -_id').lean()
+        const productFound = await Product.findById(productId).populate('comments', 'text userId -_id').lean()
         if (!productFound) { res.status(404).json({ message: "Product not found" }); return }
 
         res.send(productFound)
@@ -44,28 +44,19 @@ export const addProduct = async (req: Request, res: Response, next: NextFunction
         )
         const productSaved = await newProduct.save()
 
-        res.json(
-            {
-                id: productSaved._id,
-                productName: productSaved.productName,
-                comments: productSaved.comments,
-                price: productSaved.price,
-                calification: productSaved.calification,
-                amount: productSaved.amount
-            }
-        )
+        res.json(productSaved)
     } catch (error) {
         next(error)
     }
 }
 
 export const updateProduct = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params
+    const { productId } = req.params
     const { productName, description, price, calification, amount } = req.body
 
     try {
         const updatedProduct = await Product.findByIdAndUpdate(
-            id,
+            productId,
             {
                 productName,
                 description,
@@ -84,10 +75,10 @@ export const updateProduct = async (req: Request, res: Response, next: NextFunct
 }
 
 export const deleteProduct = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params
+    const { productId } = req.params
 
     try {
-        const deletedProduct = await Product.findByIdAndDelete(id)
+        const deletedProduct = await Product.findByIdAndDelete(productId)
         if (!deletedProduct) { res.status(404).json({ message: "Product not found" }); return }
 
         res.status(200).json({ message: "Product deleted" })

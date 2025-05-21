@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
+
 import Role from '../models/Role.model.js'
 import User from '../models/User.model.js'
 import { HttpError } from '../errors/HttpError.js'
@@ -8,14 +9,12 @@ export const requestRoleChange = async (req: Request, res: Response, next: NextF
     const { currentRole, requestRole, reason } = req.body
 
     try {
-        const newRole = new Role(
-            {
-                userId,
-                currentRole,
-                requestRole,
-                reason
-            }
-        )
+        const newRole = new Role({
+            userId,
+            currentRole,
+            requestRole,
+            reason
+        })
 
         const savedRole = await newRole.save()
         res.status(201).json({
@@ -28,10 +27,10 @@ export const requestRoleChange = async (req: Request, res: Response, next: NextF
 }
 
 export const aceptRoleChange = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params
+    const { requestId } = req.params
 
     try {
-        const queryRole = await Role.findById(id)
+        const queryRole = await Role.findById(requestId)
         if (!queryRole) { throw new HttpError("Request not found", 404) }
 
         const userId = queryRole.userId
@@ -43,7 +42,7 @@ export const aceptRoleChange = async (req: Request, res: Response, next: NextFun
         )
         if (!updatedRole) { throw new HttpError("User not found", 404) }
 
-        await Role.findByIdAndDelete(id)
+        await Role.findByIdAndDelete(requestId)
 
         res.status(200).json(updatedRole)
     } catch (error) {
@@ -52,10 +51,10 @@ export const aceptRoleChange = async (req: Request, res: Response, next: NextFun
 }
 
 export const rejectRoleChange = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params
+    const { requestId } = req.params
 
     try {
-        const queryRole = await Role.findByIdAndDelete(id)
+        const queryRole = await Role.findByIdAndDelete(requestId)
         if (!queryRole) { throw new HttpError("Request not found", 404) }
 
         res.status(200).json({ message: "Request deleted successfully" })

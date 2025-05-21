@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+
 import User from "../models/User.model.js";
 
 export const getUser = async (req: Request, res: Response, next: NextFunction) => {
