@@ -13,16 +13,14 @@ export const addComment = async (req: Request, res: Response, next: NextFunction
                 productId: productId,
                 userId: req.user.id,
                 text
-            }
-        )
+            })
         const commentSaved = await newComment.save()
 
         await Product.findByIdAndUpdate(
             productId,
             {
                 $push: { comments: commentSaved._id }
-            }
-        )
+            })
 
         res.status(201).json(commentSaved)
     } catch (error) {
@@ -67,8 +65,7 @@ export const deleteComment = async (req: Request, res: Response, next: NextFunct
             { comments: id },
             {
                 $pull: { comments: id }
-            }
-        )
+            })
 
         res.json(commentsFound)
     } catch (error) {

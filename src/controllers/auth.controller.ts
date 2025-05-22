@@ -10,13 +10,11 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     try {
         const passwordHash = await bcrypt.hash(password, 10)
 
-        const newUser = new User(
-            {
-                userName,
-                email,
-                password: passwordHash
-            }
-        )
+        const newUser = new User({
+            userName,
+            email,
+            password: passwordHash
+        })
         if (!newUser) { res.status(400).json({ message: 'Invalid data' }); return }
         const userSaved = await newUser.save()
 
@@ -33,10 +31,10 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     const { email, password } = req.body
 
     try {
-        const userFound = await User.findOne({ email })
+        const userFound = await User.findOne({ email: email })
         if (!userFound) { res.status(400).json({ message: 'User not found' }); return }
 
-        const isMatch = await bcrypt.compare(password, userFound?.password)
+        const isMatch = await bcrypt.compare(password, userFound.password)
         if (!isMatch) { res.status(400).json({ message: 'Invalid credentials' }); return }
 
         const token = await createAccessToken({ id: userFound._id, role: userFound.role })

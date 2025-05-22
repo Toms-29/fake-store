@@ -43,7 +43,6 @@ export const addToCart = async (req: Request, res: Response, next: NextFunction)
                 products: [newProduct],
                 totalPrice: subtotalPrice
             })
-
             const cartSaved = await newCart.save()
 
             res.status(201).json(cartSaved)
@@ -56,8 +55,8 @@ export const addToCart = async (req: Request, res: Response, next: NextFunction)
                     {
                         $push: { products: newProduct },
                         $set: { totalPrice: cartExist.totalPrice + subtotalPrice }
-                    }
-                )
+                    })
+
                 res.status(200).json(addToCart); return;
             } else {
                 throw new HttpError("Product already in cart", 409)
@@ -139,7 +138,7 @@ export const deleteCart = async (req: Request, res: Response, next: NextFunction
         const cartDeleted = await Cart.findByIdAndDelete(cartId)
         if (!cartDeleted) { res.status(404).json({ message: "Cart not found" }); return; }
 
-        res.status(200).json(cartDeleted)
+        res.status(200).json(cartDeleted) // CAMBIAR A MENSAJE DE TEXTO
     } catch (error) {
         next(error)
     }

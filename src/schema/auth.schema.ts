@@ -12,7 +12,7 @@ export const LoginUserSchema = z.object({
 })
 
 export const ResponseAuthUserSchema = z.object({
-    id: z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid ObjectId" }),
+    _id: z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid ObjectId" }),
     userName: z.string().nonempty(),
     email: z.string().email(),
     role: z.enum(["user", "admin"])
