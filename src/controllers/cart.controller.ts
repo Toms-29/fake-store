@@ -4,7 +4,8 @@ import Cart from "../models/Cart.model.js";
 import Product from "../models/Product.model.js";
 import { HttpError } from "../errors/HttpError.js";
 import { verifyCartExist, verifyProductExist, verifyProductInCrat } from "../services/cart.service.js";
-import { CartType, ProductsType, ProductType } from "../types/cart.types.js";
+import { CartType } from "../types/cart.types.js";
+import { ProductsType, ProductType } from "../types/product.types.js";
 
 
 export const getCart = async (req: Request, res: Response, next: NextFunction) => {

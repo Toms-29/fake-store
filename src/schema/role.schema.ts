@@ -1,15 +1,17 @@
 import { z } from "zod";
+import { ObjectIdSchema } from "./common.schema.js";
+import { RoleSchema } from "./common.schema.js"
 
 export const RequestRoleChangeSchema = z.object({
-    requestRole: z.enum(["admin", "user"], { errorMap: () => ({ message: "Invalid role" }) }),
-    currentRole: z.enum(["admin", "user"], { errorMap: () => ({ message: "Invalid role" }) }),
+    requestRole: RoleSchema,
+    currentRole: RoleSchema,
     reason: z.string().nonempty({ message: "Reason is required" })
 })
 
 export const ResponseRoleSchema = z.object({
-    _id: z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid ObjectId" }),
+    _id: z.string(ObjectIdSchema),
     userId: z.string().nonempty({ message: "User ID is required" }),
-    requestRole: z.enum(["admin", "user"], { errorMap: () => ({ message: "Invalid role" }) }),
-    currentRole: z.enum(["admin", "user"], { errorMap: () => ({ message: "Invalid role" }) }),
+    requestRole: RoleSchema,
+    currentRole: RoleSchema,
     reason: z.string().nonempty({ message: "Reason is required" })
 })

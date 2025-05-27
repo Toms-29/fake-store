@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { ObjectIdSchema, RoleSchema } from "./common.schema.js"
 
 export const RegisterUserSchema = z.object({
     userName: z.string().nonempty(),
@@ -12,8 +13,8 @@ export const LoginUserSchema = z.object({
 })
 
 export const ResponseAuthUserSchema = z.object({
-    _id: z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid ObjectId" }),
+    _id: z.string(ObjectIdSchema),
     userName: z.string().nonempty(),
     email: z.string().email(),
-    role: z.enum(["user", "admin"])
+    role: RoleSchema
 })

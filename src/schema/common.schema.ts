@@ -1,12 +1,16 @@
 import { z } from "zod";
 
+export const ObjectIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid ObjectId" })
+
+export const RoleSchema = z.enum(["admin", "user"], { errorMap: () => ({ message: "Invalid role" }) })
+
 export const IdParamSchema = z.object({
-    productId: z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid ObjectId" }).optional(),
-    userId: z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid ObjectId" }).optional(),
-    commentId: z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid ObjectId" }).optional(),
-    cartId: z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid ObjectId" }).optional(),
-    orderId: z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid ObjectId" }).optional(),
-    requestId: z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid ObjectId" }).optional()
+    productId: z.string(ObjectIdSchema).optional(),
+    userId: z.string(ObjectIdSchema).optional(),
+    commentId: z.string(ObjectIdSchema).optional(),
+    cartId: z.string(ObjectIdSchema).optional(),
+    orderId: z.string(ObjectIdSchema).optional(),
+    requestId: z.string(ObjectIdSchema).optional()
 }).refine(data => data.productId || data.userId || data.commentId || data.cartId || data.orderId || data.requestId, {
     message: "Id is required"
 })
