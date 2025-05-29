@@ -6,8 +6,8 @@ export const TextOfCommentSchema = z.object({
 })
 
 export const ResponseCommentSchema = z.object({
-    _id: z.string(ObjectIdSchema),
-    productId: z.string(ObjectIdSchema),
-    userId: z.string(ObjectIdSchema),
+    _id: ObjectIdSchema,
+    productId: ObjectIdSchema,
+    userId: ObjectIdSchema,
     text: TextOfCommentSchema
 })

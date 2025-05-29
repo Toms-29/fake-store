@@ -1,7 +1,8 @@
 import Product from "../models/Product.model.js"
 import Cart from "../models/Cart.model.js"
 import { HttpError } from "../errors/HttpError.js"
-import { CartType, ProductType } from "../types/cart.types.js"
+import { CartType } from "../types/cart.types.js"
+import { ProductType } from "../types/product.types.js"
 import { ProductStatus } from "../types/product.types.js"
 
 

@@ -9,7 +9,7 @@ export const RequestRoleChangeSchema = z.object({
 })
 
 export const ResponseRoleSchema = z.object({
-    _id: z.string(ObjectIdSchema),
+    _id: ObjectIdSchema,
     userId: z.string().nonempty({ message: "User ID is required" }),
     requestRole: RoleSchema,
     currentRole: RoleSchema,

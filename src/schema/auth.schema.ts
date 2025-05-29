@@ -13,8 +13,10 @@ export const LoginUserSchema = z.object({
 })
 
 export const ResponseAuthUserSchema = z.object({
-    _id: z.string(ObjectIdSchema),
+    _id: ObjectIdSchema,
     userName: z.string().nonempty(),
     email: z.string().email(),
-    role: RoleSchema
+    role: RoleSchema,
+    createdAt: z.date().optional(),
+    updatedAt: z.date().optional()
 })

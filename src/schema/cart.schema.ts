@@ -6,10 +6,10 @@ export const QuantityOfProductToCartSchema = z.object({
 })
 
 export const ResponseCartSchema = z.object({
-    _id: z.string(ObjectIdSchema),
-    userId: z.string(ObjectIdSchema),
+    _id: ObjectIdSchema,
+    userId: ObjectIdSchema,
     products: z.array(z.object({
-        id: z.string(ObjectIdSchema),
+        id: ObjectIdSchema,
         quantity: z.number(QuantityOfProductToCartSchema)
     })),
     totalPrice: z.number().nonnegative()

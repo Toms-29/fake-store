@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const ProductDataSchema = z.object({
+export const ProductDataSchema = z.array(z.object({
     price_data: z.object({
         product_data: z.object({
             name: z.string().nonempty(),
@@ -10,7 +10,7 @@ export const ProductDataSchema = z.object({
         unit_amount: z.number().nonnegative()
     }),
     quantity: z.number().int().positive()
-})
+}))
 
 export const PaymentSessionSchema = z.object({
     line_items: z.array(ProductDataSchema),
