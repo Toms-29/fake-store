@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
-import { ZodError } from 'zod'
 
 import User from '../models/User.model.js'
 import { createAccessToken } from '../lib/jwt.js'
 import { RegisterUserSchema, LoginUserSchema, ResponseAuthUserSchema } from "../schema/auth.schema.js"
 import { ObjectIdSchema } from "../schema/common.schema.js"
+import { HttpError } from '../errors/HttpError.js'
 
 interface UserRequest {
     _id: string,
@@ -18,8 +18,10 @@ interface UserRequest {
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        RegisterUserSchema.parse(req.body)
-        const { userName, email, password } = req.body
+        const { userName, email, password } = RegisterUserSchema.parse(req.body)
+
+        const userExists = await User.findOne({ email: email })
+        if (userExists) { throw new HttpError("User already exist", 400) }
 
         const passwordHash = await bcrypt.hash(password, 10)
 
@@ -28,7 +30,6 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             email,
             password: passwordHash
         })
-        if (!newUser) { res.status(400).json({ message: 'Invalid data' }); return }
         const userSaved = await newUser.save()
 
         const token = await createAccessToken({ id: userSaved._id, role: userSaved.role })
@@ -43,21 +44,19 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 
         res.json(userParsed)
     } catch (error) {
-        if (error instanceof ZodError) { res.status(400).json({ message: error.errors.map(e => e.message) }); return }
         next(error)
     }
 }
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        LoginUserSchema.parse(req.body)
-        const { email, password } = req.body
+        const { email, password } = LoginUserSchema.parse(req.body)
 
         const userFound = await User.findOne({ email: email })
-        if (!userFound) { res.status(400).json({ message: 'User not found' }); return }
+        if (!userFound) { throw new HttpError("User not found", 404) }
 
         const isMatch = await bcrypt.compare(password, userFound.password)
-        if (!isMatch) { res.status(400).json({ message: 'Invalid credentials' }); return }
+        if (!isMatch) { throw new HttpError("Invalid credentials ", 400) }
 
         const token = await createAccessToken({ id: userFound._id, role: userFound.role })
         res.cookie('token', token)
@@ -71,7 +70,6 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 
         res.json(userParsed)
     } catch (error) {
-        if (error instanceof ZodError) { res.status(400).json({ message: error.errors.map(e => e.message) }); return }
         next(error)
     }
 }
@@ -83,11 +81,10 @@ export const logout = (_req: Request, res: Response) => {
 
 export const profile = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        ObjectIdSchema.parse(req.user.id)
-        const userId = req.user.id
+        const userId = ObjectIdSchema.parse(req.user.id)
 
         const userFound = await User.findById(userId) as UserRequest
-        if (!userFound) { res.status(400).json({ message: "User not found" }); return }
+        if (!userFound) { throw new HttpError("User not found", 404) }
 
         const userParsed = ResponseAuthUserSchema.parse({
             id: userFound._id.toString(),
@@ -100,7 +97,6 @@ export const profile = async (req: Request, res: Response, next: NextFunction) =
 
         res.json(userParsed)
     } catch (error) {
-        if (error instanceof ZodError) { res.status(400).json({ message: error.errors.map(e => e.message) }); return }
         next(error)
     }
 }

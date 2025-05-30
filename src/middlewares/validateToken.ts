@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import { ENV } from "../config/env.js"
 
@@ -15,7 +15,14 @@ export const authRequired = (req: Request, res: Response, next: NextFunction): v
     if (!token) { res.status(401).json({ message: "Unauthorized" }); return }
 
     jwt.verify(token, ENV.SECRET_TOKEN_KEY, (err: jwt.VerifyErrors | null, user: any) => {
-        if (err) { res.status(403).json({ message: "Denied acces" }); return }
+        if (err) {
+
+            if (err instanceof TokenExpiredError) { res.status(401).json({ message: "Token expired" }); return }
+
+            if (err instanceof JsonWebTokenError) { res.status(401).json({ message: "Invalid token" }); return }
+
+            res.status(403).json({ message: "Unauthorized" }); return
+        }
 
         req.user = user
 

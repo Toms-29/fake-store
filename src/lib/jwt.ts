@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken'
+import { Types } from "mongoose"
 import { ENV } from '../config/env.js'
 
 
-export const createAccessToken = (payload: object) => {
+export const createAccessToken = (payload: { id: Types.ObjectId, role: string }) => {
     return new Promise((resolve, reject) => {
         jwt.sign(
             payload,
