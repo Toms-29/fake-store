@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import Stripe from "stripe";
-import { ZodError } from "zod";
 
 import Cart from "../models/Cart.model.js";
 import Product from "../models/Product.model.js";
@@ -14,9 +13,7 @@ const stripe = new Stripe(ENV.STRIPE_SECRET_KEY)
 
 export const createCheckoutSession = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        ObjectIdSchema.parse(req.user.id)
-
-        const userId = req.user.id
+        const userId = ObjectIdSchema.parse(req.user.id)
 
         const cart = await Cart.findOne({ userId: userId })
         if (!cart) { throw new HttpError('Cart not found', 404) }
@@ -48,10 +45,8 @@ export const createCheckoutSession = async (req: Request, res: Response, next: N
         })
         PaymentSessionSchema.parse(session)
 
-
         res.status(200).json(session)
     } catch (error) {
-        if (error instanceof ZodError) { res.status(400).json({ message: error.errors.map(e => e.message) }); return }
         next(error)
     }
 }

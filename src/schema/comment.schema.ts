@@ -9,5 +9,5 @@ export const ResponseCommentSchema = z.object({
     _id: ObjectIdSchema,
     productId: ObjectIdSchema,
     userId: ObjectIdSchema,
-    text: TextOfCommentSchema
+    text: z.string().nonempty().max(500)
 })

@@ -4,13 +4,13 @@ import { addComment, deleteComment, getProductComments, getUserComments } from "
 
 const router = Router()
 
-router.post("/product/comment/productId/:productId", authRequired, addComment)
+router.post("/comments/:productId", authRequired, addComment)
 
-router.get("/product/comment/productId/:productId", authRequired, getProductComments)
+router.get("/comments/product/:id", authRequired, getProductComments)
 
-router.get("/product/comment", authRequired, getUserComments)
+router.get("/comments/user", authRequired, getUserComments)
 
-router.delete("/product/comment/id/:id", authRequired, deleteComment)
+router.delete("	/comments/:commentId", authRequired, deleteComment)
 
 
 
