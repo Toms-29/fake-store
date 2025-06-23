@@ -11,7 +11,7 @@ export const verifyCartExist = async (id: string) => {
         if (!cartFound) { throw new HttpError("Cart not found", 404) }
         return cartFound
     } catch (error) {
-        console.log("DB error: ", error)
+        console.error("DB error: ", error)
         throw new HttpError("Internal server error", 500)
     }
 }
@@ -22,17 +22,13 @@ export const verifyProductExist = async (id: string) => {
         if (!productFound) { throw new HttpError("Product not found", 404) }
         return productFound
     } catch (error) {
+        console.error("Db error:", error)
         throw new HttpError("Internal server error", 500)
     }
 }
 
-export const verifyProductInCrat = (cart: CartType, id: string) => {
-    const productInCart = cart.products.filter((product => product.productId._id.toString() === id))
-    if (productInCart.length >= 1) {
-        return productInCart[0]
-    } else {
-        return null
-    }
+export const verifyProductInCart = (cart: CartType, id: string) => {
+    return cart.products.find(p => p.productId.toString() === id) || null;
 }
 
 export const verifyAmount = async (id: string, quantity: number) => {
@@ -43,7 +39,7 @@ export const verifyAmount = async (id: string, quantity: number) => {
         if (productAmount === 0) { throw new HttpError("Product out of stock", 409) }
         if (quantity > productAmount) { throw new HttpError("Not enough amount", 409) }
     } catch (error) {
-        console.log("DB error: ", error)
+        console.error("DB error: ", error)
         throw new HttpError("Internal server error", 500)
     }
 }

@@ -41,7 +41,6 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             email: userSaved.email,
             role: userSaved.role
         })
-
         res.json(userParsed)
     } catch (error) {
         next(error)
@@ -67,7 +66,6 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
             email: userFound.email,
             role: userFound.role
         })
-
         res.json(userParsed)
     } catch (error) {
         next(error)
@@ -94,7 +92,6 @@ export const profile = async (req: Request, res: Response, next: NextFunction) =
             createdAt: userFound.createdAt,
             updatedAt: userFound.updatedAt,
         })
-
         res.json(userParsed)
     } catch (error) {
         next(error)
