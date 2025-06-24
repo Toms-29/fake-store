@@ -6,7 +6,6 @@ import Product from "../models/Product.model.js";
 import { ENV } from "../config/env.js";
 import { ProductType } from "../types/product.types.js";
 import { HttpError } from "../errors/HttpError.js";
-import { PaymentSessionSchema, ProductDataSchema } from "../schema/payment.schema.js"
 import { ObjectIdSchema } from "../schema/common.schema.js";
 
 const stripe = new Stripe(ENV.STRIPE_SECRET_KEY)
@@ -17,8 +16,9 @@ export const createCheckoutSession = async (req: Request, res: Response, next: N
 
         const cart = await Cart.findOne({ userId: userId })
         if (!cart) { throw new HttpError('Cart not found', 404) }
+        if (cart.products.length === 0) throw new HttpError('Cart is empty', 400)
 
-        const listProducts = await Promise.all(cart?.products.map(async (productList) => {
+        const listProducts = await Promise.all(cart.products.map(async (productList) => {
             let product = await Product.findById(productList.productId) as ProductType
             if (!product) { throw new HttpError('Product not found', 404) }
 
@@ -35,15 +35,13 @@ export const createCheckoutSession = async (req: Request, res: Response, next: N
             }
         }))
         if (listProducts.length === 0) { throw new HttpError('Cart is empty', 400) }
-        ProductDataSchema.parse(listProducts)
 
         const session = await stripe.checkout.sessions.create({
             line_items: listProducts,
             mode: 'payment',
-            success_url: "http://localhost:4000",
-            cancel_url: "http://localhost:4000"
+            success_url: ENV.STRIPE_SUCCESS_URL,
+            cancel_url: ENV.STRIPE_CANCEL_URL
         })
-        PaymentSessionSchema.parse(session)
 
         res.status(200).json(session)
     } catch (error) {

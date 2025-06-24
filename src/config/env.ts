@@ -14,5 +14,7 @@ export const ENV = {
     DB_URI: getEnvValue('DB_URI'),
     SECRET_TOKEN_KEY: getEnvValue('SECRET_TOKEN_KEY'),
     STRIPE_SECRET_KEY: getEnvValue('STRIPE_SECRET_KEY'),
-    NODE_ENV: process.env.NODE_ENV || "development"
+    NODE_ENV: process.env.NODE_ENV || "development",
+    STRIPE_SUCCESS_URL: getEnvValue('STRIPE_SUCCESS_URL') || "http://localhost:4000/success",
+    STRIPE_CANCEL_URL: getEnvValue('STRIPE_CANCEL_URL') || "http://localhost:4000/cancel",
 }
