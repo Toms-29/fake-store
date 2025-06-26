@@ -33,7 +33,7 @@ export class Order {
     @prop({ required: true })
     totalPrice: number
 
-    @prop({ required: true })
+    @prop({ required: true, unique: true })
     paymentId: string
 
     @prop({ enum: CartStatus, default: CartStatus.CONFIRMED })

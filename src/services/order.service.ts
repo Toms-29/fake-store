@@ -9,21 +9,27 @@ import { Types } from "mongoose"
 
 
 export const createOrderFromStripeSession = async (session: any) => {
+    const orderExist = await Order.findOne({ paymentId: session.id })
+    if (orderExist) { throw new HttpError("Order already exist", 409) }
+
     if (session.line_items?.data.length === 0) { throw new HttpError("No items in the cart", 400) }
 
     const userId = Types.ObjectId.createFromHexString(session.metadata.userId)
     const email = session.metadata.email
     const cartId = Types.ObjectId.createFromHexString(session.metadata.cartId)
 
-    const products = session.line_items.data.map((item: any) => {
-        const mogoProductId = item.price.product.metadata.mongoProductId
+    const products = await Promise.all(session.line_items.data.map(async (item: any) => {
+        const mongoProductId = item.price.product.metadata.mongoProductId
+
+        const product = await Product.findById(mongoProductId)
+        if (!product) { throw new HttpError("Product not found", 404) }
 
         return {
-            productId: Types.ObjectId.createFromHexString(mogoProductId),
+            productId: Types.ObjectId.createFromHexString(mongoProductId),
             quantity: item.quantity,
             price: item.price.unit_amount / 100
         }
-    })
+    }))
 
     const totalPrice = session.amount_total / 100
     const paymentId = session.id

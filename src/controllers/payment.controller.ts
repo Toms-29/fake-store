@@ -5,7 +5,6 @@ import User from "../models/User.model.js";
 import Cart from "../models/Cart.model.js";
 import Product from "../models/Product.model.js";
 import { ENV } from "../config/env.js";
-import { ProductType } from "../types/product.types.js";
 import { HttpError } from "../errors/HttpError.js";
 import { ObjectIdSchema } from "../schema/common.schema.js";
 
@@ -22,25 +21,28 @@ export const createCheckoutSession = async (req: Request, res: Response, next: N
         if (!cart) { throw new HttpError('Cart not found', 404) }
         if (cart.products.length === 0) throw new HttpError('Cart is empty', 400)
 
-        const listProducts = await Promise.all(cart.products.map(async (productList) => {
-            let product = await Product.findById(productList.productId) as ProductType
-            if (!product) { throw new HttpError('Product not found', 404) }
+        const products = await Product.find({ _id: { $in: cart.products.map(p => p.productId) } })
+        const listProducts = products.map(p => {
+            const items = cart.products.filter(i => i.productId.toString() === p._id.toString())
+            const quantity = items[0].quantity
+
+            if(p.amount < quantity){throw new HttpError("Insufficient quantity of product ",409)}
 
             return {
                 price_data: {
                     product_data: {
-                        name: product.productName,
-                        description: product.description,
+                        name: p.productName,
+                        description: p.description,
                         metadata: {
-                            mongoProductId: product._id.toString()
+                            mongoProductId: p._id.toString()
                         }
                     },
                     currency: 'usd',
-                    unit_amount: product.price * 100,
+                    unit_amount: p.price * 100,
                 },
-                quantity: productList.quantity
+                quantity: quantity
             }
-        }))
+        })
 
         const session = await stripe.checkout.sessions.create({
             line_items: listProducts,

@@ -26,6 +26,7 @@ export const handleStripeWebhook = async (req: Request, res: Response, next: Nex
         }
 
         if (event.type === 'checkout.session.completed') {
+            res.status(200).send("Received")
             const session = event.data.object as Stripe.Checkout.Session
 
             try {
@@ -34,11 +35,12 @@ export const handleStripeWebhook = async (req: Request, res: Response, next: Nex
                 )
 
                 await createOrderFromStripeSession(sessionWithLineItems)
-
-                res.status(200).send("Received")
             } catch (error) {
                 throw new HttpError("Error processing checkout session", 500)
             }
+        } else {
+            console.log(`Unhandled event type: ${event.type}`)
+            res.status(200).send("Unhandled event type")
         }
     } catch (error) {
         next(error)
