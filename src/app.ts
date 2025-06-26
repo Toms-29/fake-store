@@ -9,24 +9,27 @@ import cartRoutes from "./routes/cart.routes.js"
 import userRoutes from "./routes/user.routes.js"
 import roleRoutes from './routes/role.routes.js'
 import paymentRoutes from "./routes/payment.routes.js"
+import webhookRotes from "./routes/stripe_webhook.routes.js"
 
 import { errorHandler } from "./middlewares/errorHandler.js";
 
 const app = express();
 
 app.use(morgan('dev'))
-app.use(express.json());
 app.use(cookieParser())
+
+app.use("/stripe", webhookRotes)
+
+app.use(express.json());
 
 app.use("/api", authRoutes)
 app.use("/api", productRoutes)
 app.use("/api", commentRoutes)
-app.use('/api', cartRoutes)
-app.use('/api', userRoutes)
-app.use('/api', roleRoutes)
-app.use('/api', paymentRoutes)
+app.use("/api", cartRoutes)
+app.use("/api", userRoutes)
+app.use("/api", roleRoutes)
+app.use("/api", paymentRoutes)
 
 app.use(errorHandler)
-
 
 export default app;

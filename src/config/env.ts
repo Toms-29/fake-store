@@ -15,6 +15,7 @@ export const ENV = {
     SECRET_TOKEN_KEY: getEnvValue('SECRET_TOKEN_KEY'),
     STRIPE_SECRET_KEY: getEnvValue('STRIPE_SECRET_KEY'),
     NODE_ENV: process.env.NODE_ENV || "development",
+    STRIPE_WEBHOOK_SECRET: getEnvValue('STRIPE_WEBHOOK_SECRET'),
     STRIPE_SUCCESS_URL: getEnvValue('STRIPE_SUCCESS_URL') || "http://localhost:4000/success",
     STRIPE_CANCEL_URL: getEnvValue('STRIPE_CANCEL_URL') || "http://localhost:4000/cancel",
 }

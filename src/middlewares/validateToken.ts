@@ -1,6 +1,8 @@
-import jwt, { TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import { ENV } from "../config/env.js"
+
+const { TokenExpiredError, JsonWebTokenError } = jwt
 
 declare module 'express-serve-static-core' {
     interface Request {

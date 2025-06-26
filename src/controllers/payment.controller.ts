@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import Stripe from "stripe";
 
+import User from "../models/User.model.js";
 import Cart from "../models/Cart.model.js";
 import Product from "../models/Product.model.js";
 import { ENV } from "../config/env.js";
@@ -14,6 +15,9 @@ export const createCheckoutSession = async (req: Request, res: Response, next: N
     try {
         const userId = ObjectIdSchema.parse(req.user.id)
 
+        const user = await User.findById(userId)
+        if (!user) { throw new HttpError('User not found', 404) }
+
         const cart = await Cart.findOne({ userId: userId })
         if (!cart) { throw new HttpError('Cart not found', 404) }
         if (cart.products.length === 0) throw new HttpError('Cart is empty', 400)
@@ -25,22 +29,29 @@ export const createCheckoutSession = async (req: Request, res: Response, next: N
             return {
                 price_data: {
                     product_data: {
-                        name: product?.productName,
-                        description: product?.description,
+                        name: product.productName,
+                        description: product.description,
+                        metadata: {
+                            mongoProductId: product._id.toString()
+                        }
                     },
                     currency: 'usd',
-                    unit_amount: product?.price * 100,
+                    unit_amount: product.price * 100,
                 },
                 quantity: productList.quantity
             }
         }))
-        if (listProducts.length === 0) { throw new HttpError('Cart is empty', 400) }
 
         const session = await stripe.checkout.sessions.create({
             line_items: listProducts,
             mode: 'payment',
             success_url: ENV.STRIPE_SUCCESS_URL,
-            cancel_url: ENV.STRIPE_CANCEL_URL
+            cancel_url: ENV.STRIPE_CANCEL_URL,
+            metadata: {
+                userId: user._id.toString(),
+                email: user.email,
+                cartId: cart._id.toString()
+            }
         })
 
         res.status(200).json(session)

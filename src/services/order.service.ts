@@ -1,9 +1,50 @@
 import Product from "../models/Product.model.js"
+import Order from "../models/Order.model.js"
 import Cart from "../models/Cart.model.js"
 import { HttpError } from "../errors/HttpError.js"
 import { CartType } from "../types/cart.types.js"
 import { ProductType } from "../types/product.types.js"
 import { ProductStatus } from "../types/product.types.js"
+import { Types } from "mongoose"
+
+
+export const createOrderFromStripeSession = async (session: any) => {
+    if (session.line_items?.data.length === 0) { throw new HttpError("No items in the cart", 400) }
+
+    const userId = Types.ObjectId.createFromHexString(session.metadata.userId)
+    const email = session.metadata.email
+    const cartId = Types.ObjectId.createFromHexString(session.metadata.cartId)
+
+    const products = session.line_items.data.map((item: any) => {
+        const mogoProductId = item.price.product.metadata.mongoProductId
+
+        return {
+            productId: Types.ObjectId.createFromHexString(mogoProductId),
+            quantity: item.quantity,
+            price: item.price.unit_amount / 100
+        }
+    })
+
+    const totalPrice = session.amount_total / 100
+    const paymentId = session.id
+
+    try {
+        const order = new Order({
+            userId,
+            email,
+            cartId,
+            products,
+            totalPrice,
+            paymentId,
+        })
+        const orderSaved = await order.save()
+
+        return orderSaved
+    } catch (error) {
+        console.error("Error creating order:", error)
+        throw new HttpError("Failed to create order", 500)
+    }
+}
 
 
 export const confirmPurchase = async (id: string) => {
