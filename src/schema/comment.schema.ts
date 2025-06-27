@@ -6,7 +6,7 @@ export const TextOfCommentSchema = z.object({
 })
 
 export const ResponseCommentSchema = z.object({
-    _id: ObjectIdSchema,
+    id: ObjectIdSchema,
     productId: ObjectIdSchema,
     userId: ObjectIdSchema,
     text: z.string().nonempty().max(500)

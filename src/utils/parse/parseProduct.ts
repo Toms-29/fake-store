@@ -5,7 +5,14 @@ export const parseProduct = (product: any) => {
         id: product._id.toString(),
         productName: product.productName,
         description: product.description,
-        comments: product.comments,
+        comments: Array.isArray(product.comments)
+            ? product.comments
+                .filter((c: any) => c?.userId && c.userId.userName && c.text)
+                .map((c: any) => ({
+                    userName: c.userId.userName,
+                    text: c.text
+                }))
+            : [],
         price: product.price,
         calification: product.calification,
         amount: product.amount,

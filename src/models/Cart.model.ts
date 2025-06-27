@@ -20,7 +20,7 @@ export class Cart {
     @prop({ type: () => [cartProduct], required: true, _id: false })
     products: cartProduct[]
 
-    @prop({ required: true, trim: true })
+    @prop({ required: true })
     totalPrice: number
 
     @prop({ required: true, enum: CartStatus, default: CartStatus.PENDING })
