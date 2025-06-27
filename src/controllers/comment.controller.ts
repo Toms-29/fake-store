@@ -4,7 +4,7 @@ import Comment from "../models/Comment.model.js"
 import Product from "../models/Product.model.js"
 import { TextOfCommentSchema } from "../schema/comment.schema.js"
 import { ObjectIdSchema } from "../schema/common.schema.js"
-import { parseComment } from "../utils/parseComment.js"
+import { parseComment } from "../utils/parse/parseComment.js"
 import { HttpError } from "../errors/HttpError.js"
 
 export const addComment = async (req: Request, res: Response, next: NextFunction) => {

@@ -7,7 +7,7 @@ import { CartType } from "../types/cart.types.js";
 import { ProductsType, ProductType } from "../types/product.types.js";
 import { ObjectIdSchema } from "../schema/common.schema.js";
 import { CartItemInputSchema } from "../schema/cart.schema.js";
-import { parseCart } from "../utils/parseCart.js";
+import { parseCart } from "../utils/parse/parseCart.js";
 
 
 export const getCart = async (req: Request, res: Response, next: NextFunction) => {

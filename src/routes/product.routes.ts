@@ -4,15 +4,15 @@ import { getProducts, getProduct, addProduct, updateProduct, deleteProduct } fro
 
 const router = Router();
 
-router.get("/product/productName/:productName", getProducts)
 
-router.get("/product/id/:productId", getProduct)
+router.get("/products/name/:productName", getProducts)
 
-router.post("/product/add", authRequired, addProduct)
+router.get("/products/id/:productId", getProduct)
 
-router.put("/product/update/id/:productId", authRequired, updateProduct)
+router.post("/products", authRequired, addProduct)
 
-router.delete("/product/delete/id/:productId", authRequired, deleteProduct)
+router.put("/products/:productId", authRequired, updateProduct)
 
+router.delete("/products/:productId", authRequired, deleteProduct)
 
 export default router

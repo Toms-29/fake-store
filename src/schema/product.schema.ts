@@ -21,7 +21,7 @@ export const ProductUpdateSchema = z.object({
 })
 
 export const ResponseProductSchema = z.object({
-    _id: ObjectIdSchema,
+    id: ObjectIdSchema,
     productName: z.string().nonempty({ message: "Product name is required" }),
     description: z.string().nonempty({ message: "Description is required" }).max(500, { message: "Description must be less than 500 characters" }),
     comments: z.array(ObjectIdSchema).optional(),

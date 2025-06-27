@@ -20,7 +20,7 @@ export class Product {
     @prop()
     images: string[]
 
-    @prop({ required: true, trim: true })
+    @prop({ required: true, trim: true, default: 0 })
     calification: number
 
     @prop({ required: true, trim: true })
