@@ -32,7 +32,14 @@ export const getProduct = async (req: Request, res: Response, next: NextFunction
     try {
         const productId = ObjectIdSchema.parse(req.params.productId)
 
-        const productFound = await Product.findById(productId).populate('comments', 'text userId -_id').lean()
+        const productFound = await Product.findById(productId).populate({
+            path: 'comments',
+            select: 'text userId -_id',
+            populate: {
+                path: 'userId',
+                select: 'username -_id'
+            }
+        }).lean()
         if (!productFound) { throw new HttpError("Product not found", 404) }
 
         const parsedProduct = parseProduct(productFound)
