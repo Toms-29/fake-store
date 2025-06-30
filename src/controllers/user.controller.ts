@@ -1,102 +1,84 @@
 import { Request, Response, NextFunction } from "express";
-import { ZodError } from "zod";
+import bcrypt from 'bcryptjs'
 
 import User from "../models/User.model.js";
-import { ObjectIdSchema, NameParamSchema } from "../schema/common.schema.js";
-import { updatedUserSchema } from "../schema/user.schema.js"
-import { ResponseAuthUserSchema } from "../schema/auth.schema.js"
+import { ObjectIdSchema } from "../schema/common.schema.js";
+import { updatedUserSchema, UserNameQuerySchema } from "../schema/user.schema.js"
+import { HttpError } from "../errors/HttpError.js";
+import { parseUser } from "../utils/parse/parseUser.js";
 
 export const getUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        ObjectIdSchema.parse(req.body)
+        const userId = ObjectIdSchema.parse(req.params.userId).toString()
 
-        const { userId } = req.body
+        if (req.user.role !== "admin" && req.user.id !== userId) { throw new HttpError("Forbidden", 403) }
 
         const userFound = await User.findOne({ _id: userId }, { password: false })
-        if (!userFound) { res.status(404).json({ message: "User not found" }); return }
+        if (!userFound) { throw new HttpError("User not found", 404) }
 
-        const parsedUser = ResponseAuthUserSchema.parse({
-            id: userFound._id.toString(),
-            userName: userFound.userName,
-            email: userFound.email,
-            role: userFound.role
-        })
+        const parsedUser = parseUser(userFound)
 
         res.status(200).json(parsedUser)
     } catch (error) {
-        if (error instanceof ZodError) { res.status(400).json({ message: error.errors.map(e => e.message) }); return }
         next(error)
     }
 }
 
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        NameParamSchema.parse(req.body)
+        const { userName } = UserNameQuerySchema.partial().parse(req.query)
 
-        const { userName } = req.body
+        const query: any = {}
+        if (userName) { query.userName = { $regex: userName, $options: "i" } }
 
-        const usersFound = await User.find({ userName: userName }, { password: false })
-        if (!usersFound) { res.status(404).json({ message: "Users not found" }); return }
+        const usersFound = await User.find(query, { password: false })
+        if (usersFound.length === 0) {
+            const message = userName ? `No users found matching '${userName}'` : "No users found"
+            throw new HttpError(message, 404)
+        }
 
-        const parsedUsers = usersFound.map(user => {
-            return ResponseAuthUserSchema.parse({
-                id: user._id.toString(),
-                userName: user.userName,
-                email: user.email,
-                role: user.role
-            })
-        })
+        const parsedUsers = usersFound.map(user => parseUser(user))
 
         res.status(200).json(parsedUsers)
     } catch (error) {
-        if (error instanceof ZodError) { res.status(400).json({ message: error.errors.map(e => e.message) }); return }
         next(error)
     }
 }
 
 export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        updatedUserSchema.parse(req.body)
+        const userId = ObjectIdSchema.parse(req.params.userId).toString()
+        const updateFields = updatedUserSchema.parse(req.body)
 
-        const { userId, email, userName, password } = req.body
+        if (req.user.role !== "admin" && req.user.id !== userId) { throw new HttpError("Forbidden", 403) }
 
-        const updatedUser = await User.findOneAndUpdate(
-            { _id: userId },
-            {
-                email,
-                userName,
-                password
-            },
-            { new: true }
-        ).select({ password: false })
-        if (!updatedUser) { res.status(404).json({ message: "User not found" }); return }
+        if (updateFields.password) {
+            const passwordHash = await bcrypt.hash(updateFields.password, 10)
+            updateFields.password = passwordHash
+        }
 
-        const parsedUser = ResponseAuthUserSchema.parse({
-            id: updatedUser._id.toString(),
-            userName: updatedUser.userName,
-            email: updatedUser.email,
-            role: updatedUser.role
-        })
+        const updatedUser = await User.findOneAndUpdate({ _id: userId }, updateFields, { new: true }).select({ password: false })
+        if (!updatedUser) { throw new HttpError("User not found", 404) }
+
+        const parsedUser = parseUser(updatedUser)
 
         res.status(200).json(parsedUser)
     } catch (error) {
-        if (error instanceof ZodError) { res.status(400).json({ message: error.errors.map(e => e.message) }); return }
         next(error)
     }
 }
 
 export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        ObjectIdSchema.parse(req.body)
+        const userId = ObjectIdSchema.parse(req.params.userId).toString()
 
-        const { userId } = req.body
+        if (req.user.role !== "admin" && req.user.id !== userId) { throw new HttpError("Forbidden", 403) }
 
         const deletedUser = await User.findOneAndDelete({ _id: userId })
-        if (!deletedUser) { res.status(404).json({ message: "User not found" }); return }
+        if (!deletedUser) { throw new HttpError("User not found", 404) }
 
         res.status(200).json({ message: "User deleted" })
     } catch (error) {
-        if (error instanceof ZodError) { res.status(400).json({ message: error.errors.map(e => e.message) }); return }
         next(error)
     }
 }

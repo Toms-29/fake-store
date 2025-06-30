@@ -1,15 +1,16 @@
 import { Router } from "express";
 import { authRequired } from "../middlewares/validateToken.js";
 import { deleteUser, getUser, getUsers, updateUser } from "../controllers/user.controller.js";
+import { roleVerify } from "../middlewares/roleVerify.js";
 
 const router = Router()
 
-router.get("/user", authRequired, getUser)
+router.get("/users/:userId", authRequired, getUser)
 
-router.get("/user/users", authRequired, getUsers)
+router.get("/users", authRequired, roleVerify, getUsers)
 
-router.put("/user/update", authRequired, updateUser)
+router.put("/users/:userId", authRequired, updateUser)
 
-router.delete("/user/delete", authRequired, deleteUser)
+router.delete("/users/:userId", authRequired, deleteUser)
 
 export default router
