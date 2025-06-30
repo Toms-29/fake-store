@@ -9,9 +9,10 @@ export const RequestRoleChangeSchema = z.object({
 })
 
 export const ResponseRoleSchema = z.object({
-    _id: ObjectIdSchema,
-    userId: z.string().nonempty({ message: "User ID is required" }),
+    id: ObjectIdSchema,
+    userId: ObjectIdSchema,
     requestRole: RoleSchema,
     currentRole: RoleSchema,
-    reason: z.string().nonempty({ message: "Reason is required" })
+    reason: z.string().nonempty({ message: "Reason is required" }),
+    status: z.enum(["acepted", "pending","rejected"])
 })

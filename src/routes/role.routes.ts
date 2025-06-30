@@ -5,14 +5,14 @@ import { roleVerify } from "../middlewares/roleVerify.js";
 
 const router = Router()
 
-router.get('/role/requests/userId/:userId', authRequired, roleVerify, getRequestRoleChange)
+router.get('/role/requests/user/:userId', authRequired, roleVerify, getRequestRoleChange)
 
 router.get('/role/requests', authRequired, roleVerify, getRequestsRoleChange)
 
-router.get('/role/requests/aceptRequest/:requestId', authRequired, roleVerify, aceptRoleChange)
+router.put('/role/requests/acept/:requestId', authRequired, roleVerify, aceptRoleChange)
 
-router.get('/role/requests/rejectRequest/:requestId', authRequired, roleVerify, rejectRoleChange)
+router.put('/role/requests/reject/:requestId', authRequired, roleVerify, rejectRoleChange)
 
-router.get('/role/requests/createRequest', authRequired, roleVerify, requestRoleChange)
+router.post('/role/requests/createRequest', authRequired, roleVerify, requestRoleChange)
 
 export default router
