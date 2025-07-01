@@ -3,9 +3,10 @@ import bcrypt from 'bcryptjs'
 
 import User from '../models/User.model.js'
 import { createAccessToken } from '../lib/jwt.js'
-import { RegisterUserSchema, LoginUserSchema, ResponseAuthUserSchema } from "../schema/auth.schema.js"
+import { RegisterUserSchema, LoginUserSchema } from "../schema/auth.schema.js"
 import { ObjectIdSchema } from "../schema/common.schema.js"
 import { HttpError } from '../errors/HttpError.js'
+import { parseUser } from '../utils/parse/parseUser.js'
 
 interface UserRequest {
     _id: string,
@@ -35,12 +36,8 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         const token = await createAccessToken({ id: userSaved._id, role: userSaved.role })
         res.cookie('token', token)
 
-        const userParsed = ResponseAuthUserSchema.parse({
-            id: userSaved._id.toString(),
-            userName: userSaved.userName,
-            email: userSaved.email,
-            role: userSaved.role
-        })
+        const userParsed = parseUser(userSaved)
+
         res.json(userParsed)
     } catch (error) {
         next(error)
@@ -60,12 +57,8 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         const token = await createAccessToken({ id: userFound._id, role: userFound.role })
         res.cookie('token', token)
 
-        const userParsed = ResponseAuthUserSchema.parse({
-            id: userFound._id.toString(),
-            userName: userFound.userName,
-            email: userFound.email,
-            role: userFound.role
-        })
+        const userParsed = parseUser(userFound)
+
         res.json(userParsed)
     } catch (error) {
         next(error)
@@ -84,14 +77,8 @@ export const profile = async (req: Request, res: Response, next: NextFunction) =
         const userFound = await User.findById(userId) as UserRequest
         if (!userFound) { throw new HttpError("User not found", 404) }
 
-        const userParsed = ResponseAuthUserSchema.parse({
-            id: userFound._id.toString(),
-            userName: userFound.userName,
-            email: userFound.email,
-            role: userFound.role,
-            createdAt: userFound.createdAt,
-            updatedAt: userFound.updatedAt,
-        })
+        const userParsed = parseUser(userFound)
+
         res.json(userParsed)
     } catch (error) {
         next(error)
