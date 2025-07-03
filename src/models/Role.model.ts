@@ -15,7 +15,7 @@ export class Role {
     @prop({ required: true, enum: UserRole })
     requestRole: UserRole
 
-    @prop({ required: true, minlength: 20, maxlength: 100 })
+    @prop({ required: true, minlength: 20, maxlength: 300 })
     reason: string
 
     @prop({ required: true, enum: queryStatus, default: queryStatus.PENDING })

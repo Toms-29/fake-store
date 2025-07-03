@@ -1,22 +1,20 @@
 import { z } from "zod"
-import { ObjectIdSchema, RoleSchema } from "./common.schema.js"
+import { ObjectIdSchema, RoleSchema, TimeStampsSchema, UserName } from "./common.schema.js"
 
 export const RegisterUserSchema = z.object({
-    userName: z.string().nonempty(),
-    email: z.string().email(),
-    password: z.string().min(6)
+    userName: UserName,
+    email: z.string().trim().email(),
+    password: z.string().trim().min(6).max(32)
 })
 
 export const LoginUserSchema = z.object({
-    email: z.string().email(),
-    password: z.string().min(6)
+    email: z.string().trim().email(),
+    password: z.string().trim().min(6).max(32)
 })
 
 export const ResponseAuthUserSchema = z.object({
     id: ObjectIdSchema,
-    userName: z.string().nonempty(),
-    email: z.string().email(),
+    userName: UserName,
+    email: z.string().trim().email(),
     role: RoleSchema,
-    createdAt: z.date().optional(),
-    updatedAt: z.date().optional()
-})
+}).merge(TimeStampsSchema)

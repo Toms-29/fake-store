@@ -1,35 +1,35 @@
 import { z } from 'zod'
-import { ObjectIdSchema } from './common.schema.js'
+import { ObjectIdSchema, PositiveInteger, ProductName, ProductStatusSchema, UserName } from './common.schema.js'
 
 export const AddProductSchema = z.object({
-    productName: z.string().nonempty({ message: "Product name is required" }),
-    description: z.string().nonempty({ message: "Description is required" }).max(500, { message: "Description must be less than 500 characters" }),
-    price: z.number().positive({ message: "Price must be a positive number" }),
-    amount: z.number().int().positive({ message: "Amount must be a positive integer" }),
+    productName: ProductName,
+    description: z.string().trim().nonempty({ message: "Description is required" }).min(10).max(500, { message: "Description must be less than 500 characters" }),
+    price: PositiveInteger,
+    amount: PositiveInteger,
     images: z.array(z.string().url()).max(5, "Max five images allowed").optional()
 })
 
 export const ProductUpdateSchema = z.object({
-    productName: z.string().optional(),
-    description: z.string().optional(),
-    price: z.number().positive({ message: "Price must be a positive number" }).optional(),
-    calification: z.number().min(0).max(5, { message: "Calification must be between 0 and 5" }).optional(),
-    amount: z.number().int().positive({ message: "Amount must be a positive integer" }).optional(),
-    status: z.enum(["in_stock", "out_of_stock", "pending"]).optional(),
+    productName: ProductName.optional(),
+    description: z.string().trim().min(10).max(500).optional(),
+    price: PositiveInteger.optional(),
+    calification: PositiveInteger.optional(),
+    amount: PositiveInteger.optional(),
+    status: ProductStatusSchema.optional(),
     images: z.array(z.string().url()).max(5, "Max five images allowed").optional()
 })
 
 export const ResponseProductSchema = z.object({
     id: ObjectIdSchema,
-    productName: z.string().nonempty({ message: "Product name is required" }),
-    description: z.string().nonempty({ message: "Description is required" }).max(500, { message: "Description must be less than 500 characters" }),
+    productName: ProductName,
+    description: z.string().trim().nonempty({ message: "Description is required" }).min(10).max(500, { message: "Description must be less than 500 characters" }),
     comments: z.array(z.object({
-        userName: z.string(),
-        text: z.string().nonempty().max(500)
+        userName: UserName,
+        text: z.string().trim().nonempty().max(200)
     })).optional(),
-    price: z.number().positive({ message: "Price must be a positive number" }),
-    calification: z.number().min(0).max(5, { message: "Calification must be between 0 and 5" }).optional(),
-    amount: z.number().int().positive({ message: "Amount must be a positive integer" }),
-    status: z.enum(["in_stock", "out_of_stock", "pending"]),
+    price: PositiveInteger,
+    calification: PositiveInteger,
+    amount: PositiveInteger,
+    status: ProductStatusSchema,
     images: z.array(z.string().url()).max(5, "Max five images allowed").optional()
 })

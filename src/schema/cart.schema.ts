@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { ObjectIdSchema } from "./common.schema.js"
 
-export const QuantitySchema = z.number().nonnegative().int().min(1)
+export const QuantitySchema = z.preprocess((val) => Number(val), z.number().nonnegative().int().min(1))
 
 export const CartItemInputSchema = z.object({
     userId: ObjectIdSchema,
@@ -14,7 +14,7 @@ export const ResponseCartSchema = z.object({
     userId: ObjectIdSchema,
     products: z.array(z.object({
         id: ObjectIdSchema,
-        quantity: z.number(QuantitySchema)
+        quantity: QuantitySchema
     })),
     totalPrice: z.number().nonnegative()
 })

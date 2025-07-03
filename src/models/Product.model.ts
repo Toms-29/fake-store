@@ -6,7 +6,7 @@ import { Comment } from "./Comment.model.js"
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Product {
-    @prop({ required: true, trim: true, maxlength: 150 })
+    @prop({ required: true, trim: true, maxlength: 100 })
     productName: string
 
     @prop({ required: true, trim: true, maxlength: 500 })
