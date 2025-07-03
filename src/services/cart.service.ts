@@ -36,6 +36,7 @@ export const verifyAmount = async (id: string, quantity: number) => {
         const productFound = await Product.findById(id) as ProductType
         const productAmount = productFound?.amount
 
+        if (!productFound) throw new HttpError("Product not found", 404)
         if (productAmount === 0) { throw new HttpError("Product out of stock", 409) }
         if (quantity > productAmount) { throw new HttpError("Not enough amount", 409) }
     } catch (error) {

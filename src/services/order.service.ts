@@ -13,10 +13,13 @@ export const createOrderFromStripeSession = async (session: any) => {
     if (orderExist) { throw new HttpError("Order already exist", 409) }
 
     if (session.line_items?.data.length === 0) { throw new HttpError("No items in the cart", 400) }
-
+    
+    await confirmPurchase(session.metadata.cartId)
+    
     const userId = Types.ObjectId.createFromHexString(session.metadata.userId)
     const email = session.metadata.email
     const cartId = Types.ObjectId.createFromHexString(session.metadata.cartId)
+
 
     const products = await Promise.all(session.line_items.data.map(async (item: any) => {
         const mongoProductId = item.price.product.metadata.mongoProductId
