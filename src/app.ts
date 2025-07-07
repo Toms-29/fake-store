@@ -12,6 +12,7 @@ import userRoutes from "./routes/user.routes.js"
 import roleRoutes from './routes/role.routes.js'
 import paymentRoutes from "./routes/payment.routes.js"
 import webhookRotes from "./routes/stripe_webhook.routes.js"
+import orderRoutes from "./routes/order.routes.js"
 
 import { errorHandler } from "./middlewares/errorHandler.js";
 
@@ -31,6 +32,7 @@ app.use("/api", cartRoutes)
 app.use("/api", userRoutes)
 app.use("/api", roleRoutes)
 app.use("/api", paymentRoutes)
+app.use("/api", orderRoutes)
 
 app.use(errorHandler)
 

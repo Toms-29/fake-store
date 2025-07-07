@@ -8,7 +8,9 @@ export const UserName = z.string().trim().nonempty("User name is required").min(
 
 export const ProductName = z.string().trim().nonempty("Product name is required").min(3).max(100).regex(/^[a-zA-Z0-9-_]+$/, "Solo letras, números, guiones y guiones bajos")
 
-export const PositiveInteger = z.preprocess((val) => Number(val), z.number().positive({ message: "Must be a positive integer" }))
+export const PositiveInteger = z.preprocess((val) => Number(val), z.number().positive({ message: "Must be a positive integer" }).int())
+
+export const PositiveFloat = z.preprocess((val) => Number(val), z.number().positive({ message: "Must be a positive integer" }))
 
 export const OrderStatusSchema = z.enum(["paid", "pending", "cancelled"]);
 
