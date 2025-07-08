@@ -1,7 +1,7 @@
 import { Router } from "express"
 import bodyParser from "body-parser"
 
-import { handleStripeWebhook } from "../controllers/stripe_webhook.controller.js"
+import { handleStripeWebhook } from "../controllers/stripeWebhook.controller.js"
 
 
 const router = Router()

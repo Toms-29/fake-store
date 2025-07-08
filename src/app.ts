@@ -11,7 +11,7 @@ import cartRoutes from "./routes/cart.routes.js"
 import userRoutes from "./routes/user.routes.js"
 import roleRoutes from './routes/role.routes.js'
 import paymentRoutes from "./routes/payment.routes.js"
-import webhookRotes from "./routes/stripe_webhook.routes.js"
+import webhookRotes from "./routes/stripeWebhook.routes.js"
 import orderRoutes from "./routes/order.routes.js"
 
 import { errorHandler } from "./middlewares/errorHandler.js";

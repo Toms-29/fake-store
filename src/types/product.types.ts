@@ -1,5 +1,11 @@
 import { Types } from "mongoose"
 
+export type UpdateStockOptions  = {
+    id: string,
+    quantity: number,
+    operation: 'increase' | 'decrease'
+}
+
 export type ProductsType = {
     productId: ProductType | Types.ObjectId,
     quantity: number
