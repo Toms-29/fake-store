@@ -137,6 +137,24 @@ export const deleteCartItem = async (req: Request, res: Response, next: NextFunc
     }
 }
 
+export const clearCart = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = ObjectIdSchema.parse(req.user.id)
+
+        const cart = await Cart.findOne({ userId })
+        if (!cart) { throw new HttpError("Cart not found", 404) }
+        if (cart.products.length === 0) { res.status(200).json({ message: "Cart clear already" }); return }
+
+        cart.products = []
+        cart.totalPrice = 0
+        await cart.save()
+
+        res.status(200).json({ data: cart, message: "Cart was already empty" })
+    } catch (error) {
+        next(error)
+    }
+}
+
 export const deleteCart = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const cartId = ObjectIdSchema.parse(req.params.cartId)
