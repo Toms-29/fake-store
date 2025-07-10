@@ -15,6 +15,9 @@ export const addComment = async (req: Request, res: Response, next: NextFunction
         const productFound = await Product.findById(productId)
         if (!productFound) { throw new HttpError("Product not found", 404) }
 
+        const comment = await Comment.findOne({ userId: req.user._id, productId: productId })
+        if (comment) { throw new HttpError("Comment already exist", 403) }
+
         const newComment = new Comment({
             productId: productId,
             userId: req.user.id,
@@ -65,6 +68,25 @@ export const getUserComments = async (req: Request, res: Response, next: NextFun
         })
 
         res.status(200).json(commentsParsed)
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const updateComment = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const commentId = ObjectIdSchema.parse(req.params.commentId)
+        const { text } = TextOfCommentSchema.parse(req.body)
+
+        const updatedComment = await Comment.findByIdAndUpdate(
+            commentId,
+            {
+                $set: { text: text }
+            }, { new: true }
+        )
+        if (!updatedComment) { throw new HttpError("Comment not found", 404) }
+
+        res.status(200).json({ data: updatedComment, message: "Comment updated successfully" })
     } catch (error) {
         next(error)
     }
