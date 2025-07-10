@@ -6,7 +6,7 @@ import { Comment } from "./Comment.model.js"
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Product {
-    @prop({ required: true, trim: true, maxlength: 100 })
+    @prop({ required: true, trim: true, maxlength: 100, index: true })
     productName: string
 
     @prop({ required: true, trim: true, maxlength: 500 })
@@ -34,7 +34,6 @@ export class Product {
 
     @prop({ required: true, enum: ProductStatus, default: ProductStatus.IN_STOCK })
     status: ProductStatus
-
 }
 
 const ProductModel = getModelForClass(Product)

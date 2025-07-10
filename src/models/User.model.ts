@@ -3,11 +3,10 @@ import { UserRole } from "../types/user.types.js"
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class User {
-
-    @prop({ required: true, trim: true, maxlength: 15, minlength: 1 })
+    @prop({ required: true, trim: true, maxlength: 15, minlength: 1, index: true })
     userName: string
 
-    @prop({ required: true, trim: true, unique: true })
+    @prop({ required: true, trim: true, unique: true, index: true })
     email: string
 
     @prop({ required: true, enum: UserRole, default: UserRole.USER })
@@ -15,7 +14,6 @@ export class User {
 
     @prop({ required: true, trim: true, maxlength: 32, minlength: 6 })
     password: string
-
 }
 
 const UserModel = getModelForClass(User)

@@ -18,7 +18,7 @@ class OrderItem {
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Order {
-    @prop({ required: true, ref: () => User })
+    @prop({ required: true, ref: () => User, index: true })
     userId: Ref<User>
 
     @prop({ required: true })

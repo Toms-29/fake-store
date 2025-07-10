@@ -14,7 +14,7 @@ class cartProduct {
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Cart {
-    @prop({ ref: () => User, required: true })
+    @prop({ ref: () => User, required: true, index: true })
     userId: Ref<User>
 
     @prop({ type: () => [cartProduct], required: true, _id: false })

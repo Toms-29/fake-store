@@ -6,7 +6,7 @@ import { UserRole } from "../types/user.types.js";
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Role {
-    @prop({ required: true, ref: () => User })
+    @prop({ required: true, ref: () => User, index: true })
     userId: Ref<User>
 
     @prop({ required: true, enum: UserRole })
