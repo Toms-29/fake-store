@@ -26,6 +26,9 @@ export class Product {
     })
     images: string[]
 
+    @prop({ required: true, enum: ["tech", "learn", "sport", "tools", "garden", "furniture", "kitchen"] })
+    category: string
+
     @prop({ required: true, min: 0, max: 5, default: 0 })
     calification: number
 

@@ -33,3 +33,15 @@ export const ResponseProductSchema = z.object({
     status: ProductStatusSchema,
     images: z.array(z.string().url()).max(5, "Max five images allowed").optional()
 })
+
+export const ProductQuerySchema = z.object({
+    productName: ProductName,
+    status: ProductStatusSchema.optional(),
+    minPrice: z.preprocess((val) => Number(val), z.number().min(0)).optional(),
+    maxPrice: z.preprocess((val) => Number(val), z.number().min(0)).optional(),
+    category: z.enum(["tech", "learn", "sport", "tools", "garden", "furniture", "kitchen"]).optional(),
+    sortBy: z.enum(["price", "calification", "createdAt"]).optional(),
+    order: z.enum(["asc", "desc"]).optional(),
+    page: z.preprocess((val) => Number(val), z.number().int().min(1)).optional(),
+    limit: z.preprocess((val) => Number(val), z.number().int().min(1).max(100)).optional()
+})
