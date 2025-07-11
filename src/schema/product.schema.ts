@@ -13,7 +13,7 @@ export const ProductUpdateSchema = z.object({
     productName: ProductName.optional(),
     description: z.string().trim().min(10).max(500).optional(),
     price: PositiveFloat.optional(),
-    calification: PositiveInteger.optional(),
+    rating: PositiveInteger.optional(),
     amount: PositiveInteger.optional(),
     status: ProductStatusSchema.optional(),
     images: z.array(z.string().url()).max(5, "Max five images allowed").optional()
@@ -28,7 +28,7 @@ export const ResponseProductSchema = z.object({
         text: z.string().trim().nonempty().max(200)
     })).optional(),
     price: PositiveFloat,
-    calification: PositiveInteger,
+    rating: PositiveInteger,
     amount: PositiveInteger,
     status: ProductStatusSchema,
     images: z.array(z.string().url()).max(5, "Max five images allowed").optional()
@@ -39,8 +39,8 @@ export const ProductQuerySchema = z.object({
     status: ProductStatusSchema.optional(),
     minPrice: z.preprocess((val) => Number(val), z.number().min(0)).optional(),
     maxPrice: z.preprocess((val) => Number(val), z.number().min(0)).optional(),
-    category: z.enum(["tech", "learn", "sport", "tools", "garden", "furniture", "kitchen"]).optional(),
-    sortBy: z.enum(["price", "calification", "createdAt"]).optional(),
+    rating: z.enum(["tech", "learn", "sport", "tools", "garden", "furniture", "kitchen"]).optional(),
+    sortBy: z.enum(["price", "rating", "createdAt"]).optional(),
     order: z.enum(["asc", "desc"]).optional(),
     page: z.preprocess((val) => Number(val), z.number().int().min(1)).optional(),
     limit: z.preprocess((val) => Number(val), z.number().int().min(1).max(100)).optional()

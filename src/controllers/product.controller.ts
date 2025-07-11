@@ -33,7 +33,7 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
 
         if (req.user.role !== "admin") { filter.status = ProductStatus.IN_STOCK }
 
-        if (query.category) { filter.category = query.category }
+        if (query.rating) { filter.rating = query.rating }
 
         const sortField = query.sortBy || "createdAt"
         const sortOrder = query.order === "asc" ? 1 : -1

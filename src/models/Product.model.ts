@@ -30,7 +30,7 @@ export class Product {
     category: string
 
     @prop({ required: true, min: 0, max: 5, default: 0 })
-    calification: number
+    rating: number
 
     @prop({ required: true })
     amount: number
