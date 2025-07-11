@@ -39,7 +39,7 @@ export const ProductQuerySchema = z.object({
     status: ProductStatusSchema.optional(),
     minPrice: z.preprocess((val) => Number(val), z.number().min(0)).optional(),
     maxPrice: z.preprocess((val) => Number(val), z.number().min(0)).optional(),
-    rating: z.enum(["tech", "learn", "sport", "tools", "garden", "furniture", "kitchen"]).optional(),
+    category: z.enum(["tech", "learn", "sport", "tools", "garden", "furniture", "kitchen"]).optional(),
     sortBy: z.enum(["price", "rating", "createdAt"]).optional(),
     order: z.enum(["asc", "desc"]).optional(),
     page: z.preprocess((val) => Number(val), z.number().int().min(1)).optional(),
