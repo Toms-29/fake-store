@@ -13,7 +13,7 @@ export const getUser = async (req: Request, res: Response, next: NextFunction) =
 
         if (req.user.role !== "admin" && req.user.id !== userId) { throw new HttpError("Forbidden", 403) }
 
-        const userFound = await User.findOne({ _id: userId }, { password: false })
+        const userFound = await User.findOne({ _id: userId, isDeleted: false }, { password: false })
         if (!userFound) { throw new HttpError("User not found", 404) }
 
         const parsedUser = parseUser(userFound)
@@ -31,7 +31,7 @@ export const getUsers = async (req: Request, res: Response, next: NextFunction) 
         const query: any = {}
         if (userName) { query.userName = { $regex: userName, $options: "i" } }
 
-        const usersFound = await User.find(query, { password: false })
+        const usersFound = await User.find({ ...query, isDeleted: false }, { password: false })
         if (usersFound.length === 0) {
             const message = userName ? `No users found matching '${userName}'` : "No users found"
             throw new HttpError(message, 404)
@@ -57,6 +57,11 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
             updateFields.password = passwordHash
         }
 
+        if (updateFields.email) {
+            const email = await User.findOne({ email: updateFields.email, _id: { $ne: userId } })
+            if (email) { throw new HttpError("Email already in use", 409) }
+        }
+
         const updatedUser = await User.findOneAndUpdate({ _id: userId }, updateFields, { new: true }).select({ password: false })
         if (!updatedUser) { throw new HttpError("User not found", 404) }
 
@@ -74,7 +79,10 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
 
         if (req.user.role !== "admin" && req.user.id !== userId) { throw new HttpError("Forbidden", 403) }
 
-        const deletedUser = await User.findOneAndDelete({ _id: userId })
+        const deletedUser = await User.findByIdAndUpdate(userId, {
+            isDeleted: true,
+            deletedAt: new Date()
+        })
         if (!deletedUser) { throw new HttpError("User not found", 404) }
 
         res.status(200).json({ message: "User deleted" })

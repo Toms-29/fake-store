@@ -14,6 +14,12 @@ export class User {
 
     @prop({ required: true, trim: true, maxlength: 32, minlength: 6 })
     password: string
+
+    @prop({ default: false, index: true })
+    isDeleted: boolean
+
+    @prop({ default: null })
+    deletedAt?: Date
 }
 
 const UserModel = getModelForClass(User)
