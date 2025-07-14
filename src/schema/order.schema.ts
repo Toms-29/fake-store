@@ -18,3 +18,12 @@ export const ResponseOrderSchema = z.object({
     paymentId: z.string().trim(),
     status: OrderStatusSchema
 })
+
+
+export const OrderQuerySchema = z.object({
+  status: z.enum(["pending", "paid", "cancelled"]).optional(),
+  sortBy: z.enum(["createdAt", "totalPrice"]).optional(),
+  order: z.enum(["asc", "desc"]).optional(),
+  page: z.coerce.number().min(1).optional(),
+  limit: z.coerce.number().min(1).max(100).optional()
+})

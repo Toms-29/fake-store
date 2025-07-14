@@ -4,17 +4,35 @@ import Order from "../models/Order.model.js"
 import { ObjectIdSchema } from "../schema/common.schema.js"
 import { HttpError } from "../errors/HttpError.js"
 import { parseOrder } from "../utils/parse/parseOrder.js"
+import { OrderQuerySchema } from "../schema/order.schema.js"
 
 
 export const getOrders = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = ObjectIdSchema.parse(req.user.id)
+        const query = OrderQuerySchema.parse(req.query)
 
-        const orders = await Order.find({ userId: userId }).populate({
-            path: "products.productId",
-            select: "_id productName"
-        }).lean()
-        if (orders.length === 0) { throw new HttpError("Orders not found", 404) }
+        const filter: any = { userId }
+
+        if (query.status) { filter.status = query.status }
+
+        const sortField = query.sortBy || "createdAt"
+        const sortOrder = query.order === "asc" ? 1 : -1
+        const page = query.page || 1
+        const limit = query.limit || 10
+        const skip = (page - 1) * limit
+
+        const orders = await Order.find(filter)
+            .sort({ [sortField]: sortOrder })
+            .skip(skip)
+            .limit(limit)
+            .populate({
+                path: "products.productId",
+                select: "_id productName"
+            })
+            .lean()
+
+        if (orders.length === 0) throw new HttpError("Orders not found", 404)
 
         const parsedOrders = orders.map(order => parseOrder(order))
 
