@@ -143,13 +143,13 @@ export const clearCart = async (req: Request, res: Response, next: NextFunction)
 
         const cart = await Cart.findOne({ userId })
         if (!cart) { throw new HttpError("Cart not found", 404) }
-        if (cart.products.length === 0) { res.status(200).json({ message: "Cart clear already" }); return }
+        if (cart.products.length === 0) { res.status(200).json({ message: "Cart was already empty" }); return }
 
         cart.products = []
         cart.totalPrice = 0
         await cart.save()
 
-        res.status(200).json({ data: cart, message: "Cart was already empty" })
+        res.status(200).json({ data: cart, message: "Cart cleared successfully" })
     } catch (error) {
         next(error)
     }
