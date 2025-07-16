@@ -30,5 +30,4 @@ export const authRequired = (req: Request, res: Response, next: NextFunction): v
 
         next()
     })
-
 }

@@ -13,6 +13,7 @@ export const ENV = {
     PORT: Number(process.env.PORT) || 4000,
     DB_URI: getEnvValue('DB_URI'),
     SECRET_TOKEN_KEY: getEnvValue('SECRET_TOKEN_KEY'),
+    SECRET_REFRESH_TOKEN_KEY: getEnvValue('SECRET_REFRESH_TOKEN_KEY'),
     STRIPE_SECRET_KEY: getEnvValue('STRIPE_SECRET_KEY'),
     NODE_ENV: process.env.NODE_ENV || "development",
     STRIPE_WEBHOOK_SECRET: getEnvValue('STRIPE_WEBHOOK_SECRET'),

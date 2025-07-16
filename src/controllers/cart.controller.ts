@@ -4,7 +4,7 @@ import Cart from "../models/Cart.model.js";
 import { HttpError } from "../errors/HttpError.js";
 import { verifyAmount, verifyCartExist, verifyProductExist, verifyProductInCart } from "../services/cart.service.js";
 import { CartType } from "../types/cart.types.js";
-import { ProductsType, ProductType } from "../types/product.types.js";
+import { ProductsType } from "../types/product.types.js";
 import { ObjectIdSchema } from "../schema/common.schema.js";
 import { CartItemInputSchema } from "../schema/cart.schema.js";
 import { parseCart } from "../utils/parse/parseCart.js";
@@ -35,7 +35,7 @@ export const addToCart = async (req: Request, res: Response, next: NextFunction)
         const newProduct = { productId, quantity }
 
         const cartFound = await Cart.findOne({ userId: userId }).lean() as CartType
-        const productFound = await verifyProductExist(productId) as ProductType
+        const productFound = await verifyProductExist(productId)
 
         await verifyAmount(productId, quantity)
 
@@ -80,7 +80,7 @@ export const updateCart = async (req: Request, res: Response, next: NextFunction
         })
 
         const cart = await verifyCartExist(userId) as CartType
-        const product = await verifyProductExist(productId) as ProductType
+        const product = await verifyProductExist(productId)
 
         await verifyAmount(productId, quantity)
 
