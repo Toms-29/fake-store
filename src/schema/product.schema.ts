@@ -1,5 +1,11 @@
 import { z } from 'zod'
-import { ObjectIdSchema, PositiveFloat, PositiveInteger, ProductName, ProductStatusSchema, UserName } from './common.schema.js'
+import { ObjectIdSchema, PositiveFloat, PositiveInteger } from './common.schema.js'
+import { UserName } from './auth.schema.js';
+
+
+export const ProductName = z.string().trim().nonempty("Product name is required").min(3).max(100).regex(/^[a-zA-Z0-9-_]+$/, "Solo letras, números, guiones y guiones bajos")
+
+export const ProductStatusSchema = z.enum(["in_stock", "out_of_stock", "pending"]);
 
 export const AddProductSchema = z.object({
     productName: ProductName,

@@ -1,16 +1,20 @@
 import { Router } from "express";
-import { register, login, logout, profile } from "../controllers/auth.controller.js"
+import { register, login, logout, profile, forgotPassword, resetPassword } from "../controllers/auth.controller.js"
 import { authRequired } from "../middlewares/validateToken.js";
 import { isOwnerOrAdminFactory } from "../middlewares/adminOrOwner.js";
 
 const router = Router();
 
-router.post("/register", register)
+router.post("/auth/register", register)
 
-router.post("/login", login)
+router.post("/auth/login", login)
 
-router.post("/logout", logout)
+router.post("/auth/logout", logout)
 
-router.get("/profile", authRequired, isOwnerOrAdminFactory("ownerOrAdmin", (req)=> req.user.id), profile)
+router.post("/auth/forgot-password", authRequired, isOwnerOrAdminFactory("owner", (req) => req.user.id), forgotPassword)
+
+router.post("/auth/reset-password/:token", authRequired, isOwnerOrAdminFactory("owner", (req) => req.user.id), resetPassword)
+
+router.get("/auth/profile", authRequired, isOwnerOrAdminFactory("ownerOrAdmin", (req) => req.user.id), profile)
 
 export default router

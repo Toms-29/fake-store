@@ -1,6 +1,8 @@
 import { z } from "zod";
-import { ObjectIdSchema, RequestStatusSchema } from "./common.schema.js";
-import { RoleSchema } from "./common.schema.js"
+import { ObjectIdSchema } from "./common.schema.js";
+import { RoleSchema } from "./auth.schema.js"
+
+export const RequestStatusSchema = z.enum(["acepted", "pending", "rejected"]);
 
 export const RequestRoleChangeSchema = z.object({
     requestRole: RoleSchema,

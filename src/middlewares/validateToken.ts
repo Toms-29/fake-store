@@ -2,7 +2,6 @@ import jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import { ENV } from "../config/env.js"
 
-const { TokenExpiredError, JsonWebTokenError } = jwt
 
 declare module 'express-serve-static-core' {
     interface Request {
@@ -19,9 +18,9 @@ export const authRequired = (req: Request, res: Response, next: NextFunction): v
     jwt.verify(token, ENV.SECRET_TOKEN_KEY, (err: jwt.VerifyErrors | null, user: any) => {
         if (err) {
 
-            if (err instanceof TokenExpiredError) { res.status(401).json({ message: "Token expired" }); return }
+            if (err instanceof jwt.TokenExpiredError) { res.status(401).json({ message: "Token expired" }); return }
 
-            if (err instanceof JsonWebTokenError) { res.status(401).json({ message: "Invalid token" }); return }
+            if (err instanceof jwt.JsonWebTokenError) { res.status(401).json({ message: "Invalid token" }); return }
 
             res.status(403).json({ message: "Unauthorized" }); return
         }

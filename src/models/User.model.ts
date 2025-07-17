@@ -16,13 +16,19 @@ export class User {
     password: string
 
     @prop({ default: null })
-    refreshToken?: string
+    refreshToken?: string | null
+
+    @prop({ default: null })
+    resetPasswordToken?: string | null
+
+    @prop({ default: null })
+    resetPasswordExpires?: Date | null
 
     @prop({ default: false, index: true })
     isDeleted: boolean
 
     @prop({ default: null })
-    deletedAt?: Date
+    deletedAt?: Date | null
 }
 
 const UserModel = getModelForClass(User)

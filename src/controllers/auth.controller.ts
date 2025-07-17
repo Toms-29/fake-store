@@ -1,12 +1,13 @@
-import { NextFunction, Request, Response } from 'express'
-import bcrypt from 'bcryptjs'
+import { NextFunction, Request, Response } from "express"
+import bcrypt from "bcryptjs"
+import crypto from "crypto"
 
-import User from '../models/User.model.js'
-import { createAccessToken, createRefreshToken } from '../lib/jwt.js'
-import { RegisterUserSchema, LoginUserSchema } from "../schema/auth.schema.js"
+import User from "../models/User.model.js"
+import { createAccessToken, createRefreshToken } from "../lib/jwt.js"
+import { RegisterUserSchema, LoginUserSchema, EmailSchema, PasswordSchema } from "../schema/auth.schema.js"
 import { ObjectIdSchema } from "../schema/common.schema.js"
-import { HttpError } from '../errors/HttpError.js'
-import { parseUser } from '../utils/parse/parseUser.js'
+import { HttpError } from "../errors/HttpError.js"
+import { parseUser } from "../utils/parse/parseUser.js"
 
 interface UserRequest {
     _id: string,
@@ -82,8 +83,8 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         const isMatch = await bcrypt.compare(password, userFound.password)
         if (!isMatch) { throw new HttpError("Invalid credentials ", 400) }
 
-        const token = await createAccessToken({ id: userFound._id, role: userFound.role })
-        const refreshToken = await createRefreshToken({ id: userFound._id })
+        const token = createAccessToken({ id: userFound._id, role: userFound.role })
+        const refreshToken = createRefreshToken({ id: userFound._id })
 
         userFound.refreshToken = refreshToken
         await userFound.save()
@@ -115,6 +116,52 @@ export const logout = async (req: Request, res: Response) => {
         .clearCookie("refreshToken")
         .status(200)
         .json({ message: 'Logout success' })
+}
+
+export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const email = EmailSchema.parse(req.body.email)
+
+        const user = await User.findOne({ email })
+        if (!user) { throw new HttpError("User not found", 404) }
+
+        const token = crypto.randomBytes(32).toString('hex')
+        const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
+
+        user.resetPasswordToken = hashedToken
+        user.resetPasswordExpires = new Date(Date.now() + 10 * 60 * 1000) // 10 minutos
+        await user.save()
+
+        console.log(`Reset link: http://localhost:3000/reset-password/${token}`)
+
+        res.status(200).json({ message: ["Request create succesfully", "Token's live is to 10 minutes"] })
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { token } = req.params
+        const password = PasswordSchema.parse(req.body.password)
+
+        const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
+
+        const user = await User.findOne({
+            resetPasswordToken: hashedToken,
+            resetPasswordExpires: { $gt: new Date() }
+        })
+        if (!user) throw new HttpError("Token inválido o expirado", 400)
+
+        user.password = await bcrypt.hash(password, 10)
+        user.resetPasswordToken = null
+        user.resetPasswordExpires = null
+        await user.save()
+
+        res.status(200).json({ message: "Password updated" })
+    } catch (error) {
+        next(error)
+    }
 }
 
 export const profile = async (req: Request, res: Response, next: NextFunction) => {

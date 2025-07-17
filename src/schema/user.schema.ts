@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { UserName } from "./common.schema";
+import { EmailSchema, PasswordSchema, UserName } from "./auth.schema.js"
 
 export const updatedUserSchema = z.object({
     userName: UserName.optional(),
-    email: z.string().trim().email({ message: "Invalid email address" }).optional(),
-    password: z.string().trim().min(6, { message: "Password must be at least 6 characters long" }).max(32).optional()
+    email: EmailSchema,
+    password: PasswordSchema
 })
 
 export const UserNameQuerySchema = z.object({
