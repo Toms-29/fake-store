@@ -1,13 +1,15 @@
 import { Router } from "express";
+
 import { register, login, logout, profile, forgotPassword, resetPassword } from "../controllers/auth.controller.js"
 import { authRequired } from "../middlewares/validateToken.js";
 import { isOwnerOrAdminFactory } from "../middlewares/adminOrOwner.js";
+import { loginLimiter } from "../middlewares/rateLimit.js";
 
 const router = Router();
 
 router.post("/auth/register", register)
 
-router.post("/auth/login", login)
+router.post("/auth/login", loginLimiter, login)
 
 router.post("/auth/logout", logout)
 

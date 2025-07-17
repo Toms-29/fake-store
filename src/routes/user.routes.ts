@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import { authRequired } from "../middlewares/validateToken.js";
 import { deleteUser, getUser, getUsers, updateUser } from "../controllers/user.controller.js";
 import { roleVerify } from "../middlewares/roleVerify.js";

@@ -1,10 +1,10 @@
 import { Router } from "express";
+
 import { authRequired } from "../middlewares/validateToken.js";
 import { getProducts, getProduct, addProduct, updateProduct, deleteProduct } from "../controllers/product.controller.js";
 import { roleVerify } from "../middlewares/roleVerify.js";
 
 const router = Router();
-
 
 router.get("/products/name/:productName", getProducts)
 
