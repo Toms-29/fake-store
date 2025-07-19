@@ -1,4 +1,4 @@
-import { ResponseProductSchema } from "../../schema/product.schema.js"
+import { ResponseProductSchema } from "../../schema"
 
 export const parseProduct = (product: any) => {
     return ResponseProductSchema.parse({
@@ -17,6 +17,8 @@ export const parseProduct = (product: any) => {
         calification: product.calification,
         amount: product.amount,
         status: product.status,
-        images: product.images
+        images: product.images,
+        createdAt: product.createdAt,
+        updatedAt: product.updatedAt
     })
 }

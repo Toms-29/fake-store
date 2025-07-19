@@ -37,6 +37,12 @@ export class Product {
 
     @prop({ required: true, enum: ProductStatus, default: ProductStatus.IN_STOCK })
     status: ProductStatus
+
+    @prop({ default: false, index: true })
+    isDeleted: boolean
+
+    @prop({ default: null })
+    deletedAt?: Date | null
 }
 
 const ProductModel = getModelForClass(Product)

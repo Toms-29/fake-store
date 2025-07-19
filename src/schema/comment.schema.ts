@@ -1,13 +1,13 @@
 import { z } from "zod";
-import { ObjectIdSchema } from "./common.schema.js";
+import { DeleteStatusSchema, ObjectIdSchema, TimeStampsSchema } from "./common.schema.js";
 
-export const TextOfCommentSchema = z.object({
-    text: z.string().nonempty("Text is required").min(5).max(200, "Text must be less than 500 characters")
-})
+export const TextOfCommentSchema = z.string().nonempty("Text is required").min(5).max(200, "Text must be less than 500 characters")
 
-export const ResponseCommentSchema = z.object({
+export const BaseCommentSchema = z.object({
     id: ObjectIdSchema,
     productId: ObjectIdSchema,
     userId: ObjectIdSchema,
-    text: z.string().nonempty().min(5).max(200)
-})
+    text: TextOfCommentSchema
+}).merge(TimeStampsSchema).merge(DeleteStatusSchema).strict().required()
+
+export const ResponseCommentSchema = BaseCommentSchema.omit({ isDeleted: true, deletedAt: true }).strict().required()

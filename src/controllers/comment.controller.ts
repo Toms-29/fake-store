@@ -2,15 +2,14 @@ import { Request, Response, NextFunction } from "express"
 
 import Comment from "../models/Comment.model.js"
 import Product from "../models/Product.model.js"
-import { TextOfCommentSchema } from "../schema/comment.schema.js"
-import { ObjectIdSchema } from "../schema/common.schema.js"
+import { TextOfCommentSchema, ObjectIdSchema } from "../schema"
 import { parseComment } from "../utils/parse/parseComment.js"
 import { HttpError } from "../errors/HttpError.js"
 
 export const addComment = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const productId = ObjectIdSchema.parse(req.params.productId)
-        const { text } = TextOfCommentSchema.parse(req.body)
+        const text = TextOfCommentSchema.parse(req.body.text)
 
         const productFound = await Product.findById(productId)
         if (!productFound) { throw new HttpError("Product not found", 404) }
@@ -76,7 +75,7 @@ export const getUserComments = async (req: Request, res: Response, next: NextFun
 export const updateComment = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const commentId = ObjectIdSchema.parse(req.params.commentId)
-        const { text } = TextOfCommentSchema.parse(req.body)
+        const text = TextOfCommentSchema.parse(req.body.text)
 
         const updatedComment = await Comment.findByIdAndUpdate(
             commentId,

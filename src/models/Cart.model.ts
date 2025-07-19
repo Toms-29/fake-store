@@ -25,6 +25,12 @@ export class Cart {
 
     @prop({ required: true, enum: CartStatus, default: CartStatus.PENDING })
     status: CartStatus
+
+    @prop({ default: false, index: true })
+    isDeleted: boolean
+
+    @prop({ default: null })
+    deletedAt?: Date | null
 }
 
 const CartModel = getModelForClass(Cart)

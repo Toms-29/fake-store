@@ -5,8 +5,7 @@ import { HttpError } from "../errors/HttpError.js";
 import { verifyAmount, verifyCartExist, verifyProductExist, verifyProductInCart } from "../services/cart.service.js";
 import { CartType } from "../types/cart.types.js";
 import { ProductsType } from "../types/product.types.js";
-import { ObjectIdSchema } from "../schema/common.schema.js";
-import { CartItemInputSchema } from "../schema/cart.schema.js";
+import { ObjectIdSchema, CartItemInputSchema } from "../schema";
 import { parseCart } from "../utils/parse/parseCart.js";
 
 

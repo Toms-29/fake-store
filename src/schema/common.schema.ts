@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { UserName } from "./auth.schema.js";
+import { UserNameSchema } from "./user.schema.js";
 import { ProductName } from "./product.schema.js";
 
 export const ObjectIdSchema = z.string().trim().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid ObjectId" })
@@ -19,16 +19,19 @@ export const IdParamSchema = z.object({
     message: "Id is required"
 })
 
-
 export const NameParamSchema = z.object({
-    userName: UserName.optional(),
+    userName: UserNameSchema.optional(),
     productName: ProductName.optional()
 }).refine(data => data.productName || data.userName, {
     message: "Name is required"
 })
 
-
 export const TimeStampsSchema = z.object({
     createdAt: z.date().optional(),
     updatedAt: z.date().optional()
+})
+
+export const DeleteStatusSchema = z.object({
+    isDeleted: z.boolean(),
+    deletedAt: z.date()
 })

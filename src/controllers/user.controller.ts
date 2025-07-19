@@ -2,8 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import bcrypt from 'bcryptjs'
 
 import User from "../models/User.model.js";
-import { ObjectIdSchema } from "../schema/common.schema.js";
-import { updatedUserSchema, UserNameQuerySchema } from "../schema/user.schema.js"
+import { ObjectIdSchema, updatedUserSchema, UserNameQuerySchema } from "../schema";
 import { HttpError } from "../errors/HttpError.js";
 import { parseUser } from "../utils/parse/parseUser.js";
 

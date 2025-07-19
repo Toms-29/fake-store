@@ -3,10 +3,9 @@ import { Request, Response, NextFunction } from 'express'
 import Role from '../models/Role.model.js'
 import User from '../models/User.model.js'
 import { HttpError } from '../errors/HttpError.js'
-import { ObjectIdSchema } from '../schema/common.schema.js'
-import { RequestRoleChangeSchema } from "../schema/role.schema.js"
+import { RequestRoleChangeSchema, ObjectIdSchema } from '../schema'
 import { parseRole } from '../utils/parse/parseRole.js'
-import { queryStatus } from '../types/role.typesd.js'
+import { queryStatus } from '../types/role.types.js'
 
 export const requestRoleChange = async (req: Request, res: Response, next: NextFunction) => {
     try {

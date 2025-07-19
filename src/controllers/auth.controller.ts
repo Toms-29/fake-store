@@ -4,8 +4,7 @@ import crypto from "crypto"
 
 import User from "../models/User.model.js"
 import { createAccessToken, createRefreshToken } from "../lib/jwt.js"
-import { RegisterUserSchema, LoginUserSchema, EmailSchema, PasswordSchema } from "../schema/auth.schema.js"
-import { ObjectIdSchema } from "../schema/common.schema.js"
+import { RegisterUserSchema, LoginUserSchema, EmailSchema, PasswordSchema, ObjectIdSchema } from "../schema"
 import { HttpError } from "../errors/HttpError.js"
 import { parseUser } from "../utils/parse/parseUser.js"
 

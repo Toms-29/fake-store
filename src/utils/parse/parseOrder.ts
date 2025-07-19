@@ -1,4 +1,4 @@
-import { ResponseOrderSchema } from "../../schema/order.schema.js"
+import { ResponseOrderSchema } from "../../schema"
 
 export const parseOrder = (order: any) => {
     return ResponseOrderSchema.parse({
@@ -20,6 +20,7 @@ export const parseOrder = (order: any) => {
             : [],
         totalPrice: order.totalPrice,
         paymentId: order.paymentId.toString(),
-        status: order.status
+        status: order.status,
+        createdAt: order.createdAt
     })
 }

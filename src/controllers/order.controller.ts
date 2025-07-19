@@ -1,10 +1,9 @@
 import { Response, Request, NextFunction } from "express"
 
 import Order from "../models/Order.model.js"
-import { ObjectIdSchema } from "../schema/common.schema.js"
+import { ObjectIdSchema, OrderQuerySchema } from "../schema"
 import { HttpError } from "../errors/HttpError.js"
 import { parseOrder } from "../utils/parse/parseOrder.js"
-import { OrderQuerySchema } from "../schema/order.schema.js"
 
 
 export const getOrders = async (req: Request, res: Response, next: NextFunction) => {

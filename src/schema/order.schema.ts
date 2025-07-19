@@ -1,10 +1,10 @@
 import { z } from "zod"
-import { ObjectIdSchema, PositiveFloat, PositiveInteger } from "./common.schema"
-import { ProductName } from "./product.schema"
+import { DeleteStatusSchema, ObjectIdSchema, PositiveFloat, PositiveInteger, TimeStampsSchema } from "./common.schema.js"
+import { ProductName } from "./product.schema.js"
 
 export const OrderStatusSchema = z.enum(["paid", "pending", "cancelled"]);
 
-export const ResponseOrderSchema = z.object({
+export const BaseOrderSchema = z.object({
     id: ObjectIdSchema,
     userId: ObjectIdSchema,
     email: z.string().email(),
@@ -20,13 +20,14 @@ export const ResponseOrderSchema = z.object({
     totalPrice: PositiveFloat,
     paymentId: z.string().trim(),
     status: OrderStatusSchema
-})
+}).merge(TimeStampsSchema).merge(DeleteStatusSchema).strict().required()
 
+export const ResponseOrderSchema = BaseOrderSchema.omit({ isDeleted: true, deletedAt: true, updatedAt: true }).strict().required()
 
 export const OrderQuerySchema = z.object({
-    status: z.enum(["pending", "paid", "cancelled"]).optional(),
-    sortBy: z.enum(["createdAt", "totalPrice"]).optional(),
-    order: z.enum(["asc", "desc"]).optional(),
-    page: z.coerce.number().min(1).optional(),
-    limit: z.coerce.number().min(1).max(100).optional()
-})
+    status: z.enum(["pending", "paid", "cancelled"]),
+    sortBy: z.enum(["createdAt", "totalPrice"]),
+    order: z.enum(["asc", "desc"]),
+    page: z.coerce.number().min(1),
+    limit: z.coerce.number().min(1).max(100)
+}).partial()

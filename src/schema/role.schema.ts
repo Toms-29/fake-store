@@ -1,20 +1,18 @@
 import { z } from "zod";
-import { ObjectIdSchema } from "./common.schema.js";
-import { RoleSchema } from "./auth.schema.js"
+import { DeleteStatusSchema, ObjectIdSchema, TimeStampsSchema } from "./common.schema.js";
+import { RoleSchema } from "./user.schema.js"
 
 export const RequestStatusSchema = z.enum(["acepted", "pending", "rejected"]);
 
-export const RequestRoleChangeSchema = z.object({
-    requestRole: RoleSchema,
-    currentRole: RoleSchema,
-    reason: z.string().trim().nonempty({ message: "Reason is required" }).min(20).max(300)
-})
-
-export const ResponseRoleSchema = z.object({
+export const BaseRoleSchema = z.object({
     id: ObjectIdSchema,
     userId: ObjectIdSchema,
-    requestRole: RoleSchema,
     currentRole: RoleSchema,
-    reason: z.string().trim().nonempty({ message: "Reason is required" }),
-    status: RequestStatusSchema
-})
+    requestRole: RoleSchema,
+    reason: z.string().trim().nonempty({ message: "Reason is required" }).min(20).max(300),
+    status: RequestStatusSchema,
+}).merge(TimeStampsSchema).merge(DeleteStatusSchema).strict().required()
+
+export const RequestRoleChangeSchema = BaseRoleSchema.pick({ currentRole: true, requestRole: true, reason: true }).strict().required()
+
+export const ResponseRoleSchema = BaseRoleSchema.omit({ isDeleted: true, deletedAt: true }).strict().required()

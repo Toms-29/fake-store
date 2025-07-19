@@ -38,6 +38,12 @@ export class Order {
 
     @prop({ enum: CartStatus, default: CartStatus.CONFIRMED })
     status: CartStatus
+
+    @prop({ default: false, index: true })
+    isDeleted: boolean
+
+    @prop({ default: null })
+    deletedAt?: Date | null
 }
 
 const OrderModel = getModelForClass(Order)

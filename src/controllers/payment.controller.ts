@@ -6,7 +6,7 @@ import Cart from "../models/Cart.model.js";
 import Product from "../models/Product.model.js";
 import { ENV } from "../config/env.js";
 import { HttpError } from "../errors/HttpError.js";
-import { ObjectIdSchema } from "../schema/common.schema.js";
+import { ObjectIdSchema } from "../schema";
 import { confirmPurchase } from "../services/order.service.js";
 
 

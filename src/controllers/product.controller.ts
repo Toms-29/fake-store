@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 
 import Product from '../models/Product.model.js';
-import { AddProductSchema, ProductUpdateSchema, ProductQuerySchema } from "../schema/product.schema.js"
-import { ObjectIdSchema } from '../schema/common.schema.js';
+import { AddProductSchema, ProductUpdateSchema, ProductQuerySchema, ObjectIdSchema } from "../schema"
 import { parseProduct } from '../utils/parse/parseProduct.js';
 import { HttpError } from '../errors/HttpError.js';
 import { ProductStatus } from '../types/product.types.js';

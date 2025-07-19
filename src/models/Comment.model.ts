@@ -14,6 +14,12 @@ export class Comment {
 
     @prop({ required: true, trim: true, maxlength: 200 })
     text: string
+
+    @prop({ default: false, index: true })
+    isDeleted: boolean
+
+    @prop({ default: null })
+    deletedAt?: Date | null
 }
 
 const CommentModel = getModelForClass(Comment)
