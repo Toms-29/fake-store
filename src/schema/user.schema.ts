@@ -15,17 +15,17 @@ export const BaseUserSchema = z.object({
     email: EmailSchema,
     role: RoleSchema,
     password: PasswordSchema,
-    refreshToken: z.string(),
-    resetPasswordToken: z.string(),
-    resetPasswordExpires: z.string(),
-}).merge(TimeStampsSchema).merge(DeleteStatusSchema).strict().required()
+    refreshToken: z.string().optional(),
+    resetPasswordToken: z.string().optional(),
+    resetPasswordExpires: z.string().optional(),
+}).merge(TimeStampsSchema).merge(DeleteStatusSchema).strict()
 
-export const RegisterUserSchema = BaseUserSchema.pick({ userName: true, email: true, password: true }).strict().required()
+export const RegisterUserSchema = BaseUserSchema.pick({ userName: true, email: true, password: true }).strict()
 
-export const LoginUserSchema = BaseUserSchema.pick({ email: true, password: true }).strict().required()
+export const LoginUserSchema = BaseUserSchema.pick({ email: true, password: true }).strict()
 
 export const updatedUserSchema = BaseUserSchema.pick({ userName: true, email: true, password: true }).partial()
 
-export const ResponseAuthUserSchema = BaseUserSchema.pick({ id: true, userName: true, email: true, role: true, createdAt: true, updatedAt: true }).strict().required()
+export const ResponseAuthUserSchema = BaseUserSchema.pick({ id: true, userName: true, email: true, role: true, createdAt: true, updatedAt: true }).strict().readonly()
 
-export const UserNameQuerySchema = z.object({ userName: UserNameSchema }).strict().required()
+export const UserNameQuerySchema = z.object({ userName: UserNameSchema }).strict()

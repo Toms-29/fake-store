@@ -49,7 +49,7 @@ export const aceptRoleChange = async (req: Request, res: Response, next: NextFun
 
         const updateStatusInRole = await Role.findByIdAndUpdate(
             requestId,
-            { $set: { status: queryStatus.ACEPTED } },
+            { $set: { status: queryStatus.ACCEPTED } },
             { new: true }
         )
         if (!updateStatusInRole) { throw new HttpError("Role not found", 404) }

@@ -15,10 +15,9 @@ export const BaseCartSchema = z.object({
 }).merge(TimeStampsSchema).merge(DeleteStatusSchema)
 
 export const CartItemInputSchema = z.object({
-    userId: ObjectIdSchema,
     productId: ObjectIdSchema,
     quantity: PositiveInteger
-}).strict().required()
+}).strict()
 
 export const ResponseCartSchema = BaseCartSchema.pick({
     id: true,
@@ -26,4 +25,4 @@ export const ResponseCartSchema = BaseCartSchema.pick({
     products: true,
     totalPrice: true,
     status: true
-}).strict().required()
+}).strict().readonly()

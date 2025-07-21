@@ -25,11 +25,11 @@ export const getCart = async (req: Request, res: Response, next: NextFunction) =
 
 export const addToCart = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { userId, productId, quantity } = CartItemInputSchema.parse({
-            userId: req.user.id,
+        const { productId, quantity } = CartItemInputSchema.parse({
             productId: req.params.productId,
             quantity: req.body.quantity
         })
+        const userId = ObjectIdSchema.parse(req.user.id)
 
         const newProduct = { productId, quantity }
 
@@ -72,11 +72,11 @@ export const addToCart = async (req: Request, res: Response, next: NextFunction)
 
 export const updateCart = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { userId, productId, quantity } = CartItemInputSchema.parse({
-            userId: req.user.id,
+        const { productId, quantity } = CartItemInputSchema.parse({
             productId: req.params.productId,
             quantity: req.body.quantity
         })
+        const userId = ObjectIdSchema.parse(req.user.id)
 
         const cart = await verifyCartExist(userId) as CartType
         const product = await verifyProductExist(productId)

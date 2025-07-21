@@ -1,6 +1,6 @@
 
 export enum queryStatus {
-    ACEPTED = 'acepted',
+    ACCEPTED = 'accepted',
     REJECTED = 'rejected',
     PENDING = 'pending'
 }

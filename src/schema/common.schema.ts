@@ -32,6 +32,6 @@ export const TimeStampsSchema = z.object({
 })
 
 export const DeleteStatusSchema = z.object({
-    isDeleted: z.boolean(),
-    deletedAt: z.date()
+    isDeleted: z.boolean().default(false),
+    deletedAt: z.date().nullable().optional()
 })
