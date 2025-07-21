@@ -1,11 +1,11 @@
-import "./types/express";
+import "./types/express"
 
-import express from "express";
-import morgan from "morgan";
-import cookieParser from "cookie-parser";
+import express from "express"
+import morgan from "morgan"
+import cookieParser from "cookie-parser"
 
-import authRoutes from "./routes/auth.routes.js";
-import productRoutes from "./routes/product.routes.js";
+import authRoutes from "./routes/auth.routes.js"
+import productRoutes from "./routes/product.routes.js"
 import commentRoutes from "./routes/comment.routes.js"
 import cartRoutes from "./routes/cart.routes.js"
 import userRoutes from "./routes/user.routes.js"
@@ -14,10 +14,14 @@ import paymentRoutes from "./routes/payment.routes.js"
 import webhookRotes from "./routes/stripeWebhook.routes.js"
 import orderRoutes from "./routes/order.routes.js"
 
-import { errorHandler } from "./middlewares/errorHandler.js";
+import { corsOptions } from "./config/cors.js"
+import { helmetConfg } from "./config/helmet.js"
+import { errorHandler } from "./middlewares/errorHandler.js"
 
 const app = express();
 
+app.use(corsOptions)
+app.use(helmetConfg)
 app.use(morgan('dev'))
 app.use(cookieParser())
 
