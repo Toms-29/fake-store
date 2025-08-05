@@ -5,6 +5,8 @@ import { ENV } from '../config/env.js'
 import { HttpError } from '../errors/HttpError.js'
 
 export const errorHandler = (err: any, _req: Request, res: Response, _next: NextFunction) => {
+    if (err.message === "Not allowed by CORS") { res.status(403).json({ message: "Access denied by CORS policy" }) }
+
     if (err instanceof ZodError) {
         console.error(err)
         res.status(400).json({
