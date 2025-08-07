@@ -5,13 +5,12 @@ import { HttpError } from "../errors/HttpError.js";
 import { verifyAmount, verifyCartExist, verifyProductExist, verifyProductInCart } from "../services/cart.service.js";
 import { CartType } from "../types/cart.types.js";
 import { ProductsType } from "../types/product.types.js";
-import { ObjectIdSchema, CartItemInputSchema } from "../schema";
 import { parseCart } from "../utils/parse/parseCart.js";
 
 
 export const getCart = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const userId = ObjectIdSchema.parse(req.user.id)
+        const userId = req.user.id
 
         const cartFound = await Cart.findOne({ userId: userId }).populate("products.productId", "productName price").lean()
         if (!cartFound) { throw new HttpError("Cart not found", 404) }
@@ -25,11 +24,9 @@ export const getCart = async (req: Request, res: Response, next: NextFunction) =
 
 export const addToCart = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { productId, quantity } = CartItemInputSchema.parse({
-            productId: req.params.productId,
-            quantity: req.body.quantity
-        })
-        const userId = ObjectIdSchema.parse(req.user.id)
+        const { productId } = req.params
+        const { quantity } = req.body
+        const userId = req.user.id
 
         const newProduct = { productId, quantity }
 
@@ -72,11 +69,9 @@ export const addToCart = async (req: Request, res: Response, next: NextFunction)
 
 export const updateCart = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { productId, quantity } = CartItemInputSchema.parse({
-            productId: req.params.productId,
-            quantity: req.body.quantity
-        })
-        const userId = ObjectIdSchema.parse(req.user.id)
+        const { productId } = req.params
+        const { quantity } = req.body
+        const userId = req.user.id
 
         const cart = await verifyCartExist(userId) as CartType
         const product = await verifyProductExist(productId)
@@ -109,8 +104,8 @@ export const updateCart = async (req: Request, res: Response, next: NextFunction
 
 export const deleteCartItem = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const userId = ObjectIdSchema.parse(req.user.id)
-        const productId = ObjectIdSchema.parse(req.params.productId)
+        const userId = req.user.id
+        const { productId } = req.params
 
         const productFound = await verifyProductExist(productId)
 
@@ -138,7 +133,7 @@ export const deleteCartItem = async (req: Request, res: Response, next: NextFunc
 
 export const clearCart = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const userId = ObjectIdSchema.parse(req.user.id)
+        const userId = req.user.id
 
         const cart = await Cart.findOne({ userId })
         if (!cart) { throw new HttpError("Cart not found", 404) }
@@ -156,7 +151,7 @@ export const clearCart = async (req: Request, res: Response, next: NextFunction)
 
 export const deleteCart = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const cartId = ObjectIdSchema.parse(req.params.cartId)
+        const { cartId } = req.params
 
         const cartDeleted = await Cart.findByIdAndDelete(cartId)
         if (!cartDeleted) { throw new HttpError("Cart not found", 404) }

@@ -3,14 +3,13 @@ import { Request, Response, NextFunction } from 'express'
 import Role from '../models/Role.model.js'
 import User from '../models/User.model.js'
 import { HttpError } from '../errors/HttpError.js'
-import { RequestRoleChangeSchema, ObjectIdSchema } from '../schema'
 import { parseRole } from '../utils/parse/parseRole.js'
 import { queryStatus } from '../types/role.types.js'
 
 export const requestRoleChange = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const userId = ObjectIdSchema.parse(req.user.id)
-        const { currentRole, requestRole, reason } = RequestRoleChangeSchema.parse(req.body)
+        const userId = req.user.id
+        const { currentRole, requestRole, reason } = req.body
 
         const newRole = new Role({
             userId,
@@ -33,7 +32,7 @@ export const requestRoleChange = async (req: Request, res: Response, next: NextF
 
 export const aceptRoleChange = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const requestId = ObjectIdSchema.parse(req.params.requestId)
+        const { requestId } = req.params
 
         const queryRole = await Role.findById(requestId)
         if (!queryRole) { throw new HttpError("Request not found", 404) }
@@ -66,7 +65,7 @@ export const aceptRoleChange = async (req: Request, res: Response, next: NextFun
 
 export const rejectRoleChange = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const requestId = ObjectIdSchema.parse(req.params.requestId)
+        const { requestId } = req.params
 
         const queryRole = await Role.findByIdAndUpdate(
             requestId,
@@ -96,7 +95,7 @@ export const getRequestsRoleChange = async (_req: Request, res: Response, next: 
 
 export const getRequestRoleChange = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const userId = ObjectIdSchema.parse(req.params.userId)
+        const { userId } = req.params
 
         const request = await Role.findOne({ userId: userId })
         if (!request) { throw new HttpError("Request not found", 404) }

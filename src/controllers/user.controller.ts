@@ -2,13 +2,12 @@ import { Request, Response, NextFunction } from "express";
 import bcrypt from 'bcryptjs'
 
 import User from "../models/User.model.js";
-import { ObjectIdSchema, updatedUserSchema, UserNameQuerySchema } from "../schema";
 import { HttpError } from "../errors/HttpError.js";
 import { parseUser } from "../utils/parse/parseUser.js";
 
 export const getUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const userId = ObjectIdSchema.parse(req.params.userId).toString()
+        const { userId } = req.params
 
         if (req.user.role !== "admin" && req.user.id !== userId) { throw new HttpError("Forbidden", 403) }
 
@@ -25,7 +24,7 @@ export const getUser = async (req: Request, res: Response, next: NextFunction) =
 
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { userName } = UserNameQuerySchema.partial().parse(req.query)
+        const { userName } = req.query
 
         const query: any = {}
         if (userName) { query.userName = { $regex: userName, $options: "i" } }
@@ -46,8 +45,8 @@ export const getUsers = async (req: Request, res: Response, next: NextFunction) 
 
 export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const userId = ObjectIdSchema.parse(req.params.userId).toString()
-        const updateFields = updatedUserSchema.parse(req.body)
+        const { userId } = req.params
+        const updateFields = req.body
 
         if (req.user.role !== "admin" && req.user.id !== userId) { throw new HttpError("Forbidden", 403) }
 
@@ -74,7 +73,7 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
 
 export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const userId = ObjectIdSchema.parse(req.params.userId).toString()
+        const { userId } = req.params
 
         if (req.user.role !== "admin" && req.user.id !== userId) { throw new HttpError("Forbidden", 403) }
 

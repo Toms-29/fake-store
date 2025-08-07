@@ -2,15 +2,13 @@ import { Response, Request, NextFunction } from "express"
 
 import Rating from "../models/Rating.model.js"
 import Product from "../models/Product.model.js"
-import { ObjectIdSchema } from "../schema/common.schema.js"
-import { RateSchema } from "../schema/product.schema.js"
 
 
 export const rateProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.user.id
-        const productId = ObjectIdSchema.parse(req.params.productId)
-        const rating = RateSchema.parse(req.body.rating)
+        const { productId } = req.params
+        const { rating } = req.body
 
         await Rating.findOneAndUpdate(
             { userId, productId },

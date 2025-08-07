@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 
 import Product from '../models/Product.model.js';
-import { AddProductSchema, ProductUpdateSchema, ProductQuerySchema, ObjectIdSchema } from "../schema"
+import { ProductQuerySchema } from "../schema"
 import { parseProduct } from '../utils/parse/parseProduct.js';
 import { HttpError } from '../errors/HttpError.js';
 import { ProductStatus } from '../types/product.types.js';
+import { z } from "zod"
 
 
 const commentsPopulateConfig = {
@@ -16,9 +17,11 @@ const commentsPopulateConfig = {
     }
 }
 
+type ProductQuery = z.infer<typeof ProductQuerySchema>
+
 export const getProducts = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const query = ProductQuerySchema.parse(req.query)
+        const query = req.query as Partial<ProductQuery>
 
         const filter: any = {}
 
@@ -59,7 +62,7 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
 
 export const getProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const productId = ObjectIdSchema.parse(req.params.productId)
+        const { productId } = req.params
 
         const productFound = await Product.findById(productId).populate(commentsPopulateConfig).lean()
         if (!productFound) { throw new HttpError("Product not found", 404) }
@@ -74,7 +77,7 @@ export const getProduct = async (req: Request, res: Response, next: NextFunction
 
 export const addProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { productName, description, price, amount } = AddProductSchema.parse(req.body)
+        const { productName, description, price, amount } = req.body
 
         const newProduct = new Product({
             productName,
@@ -94,12 +97,12 @@ export const addProduct = async (req: Request, res: Response, next: NextFunction
 
 export const updateProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const productId = ObjectIdSchema.parse(req.params.productId)
+        const { productId } = req.params
 
         const productFound = await Product.findById(productId)
         if (!productFound) { throw new HttpError("Product not found", 404) }
 
-        const updateFields = ProductUpdateSchema.parse(req.body)
+        const updateFields = req.body
 
         const updatedProduct = await Product.findByIdAndUpdate(productId, updateFields, { new: true })
 
@@ -113,7 +116,7 @@ export const updateProduct = async (req: Request, res: Response, next: NextFunct
 
 export const deleteProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const productId = ObjectIdSchema.parse(req.params.productId)
+        const { productId } = req.params
 
         const deletedProduct = await Product.findByIdAndDelete(productId)
         if (!deletedProduct) { throw new HttpError("Product not found", 404) }

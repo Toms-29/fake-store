@@ -1,15 +1,17 @@
 import { Response, Request, NextFunction } from "express"
 
 import Order from "../models/Order.model.js"
-import { ObjectIdSchema, OrderQuerySchema } from "../schema"
+import { OrderQuerySchema } from "../schema"
 import { HttpError } from "../errors/HttpError.js"
 import { parseOrder } from "../utils/parse/parseOrder.js"
+import { z } from "zod"
 
+type orderQuery = z.infer<typeof OrderQuerySchema>
 
 export const getOrders = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const userId = ObjectIdSchema.parse(req.user.id)
-        const query = OrderQuerySchema.parse(req.query)
+        const userId = req.user.id
+        const query = req.query as orderQuery
 
         const filter: any = { userId }
 
@@ -44,7 +46,7 @@ export const getOrders = async (req: Request, res: Response, next: NextFunction)
 
 export const getOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const orderId = ObjectIdSchema.parse(req.params.id)
+        const { orderId } = req.params
 
         const order = await Order.findById(orderId).populate({
             path: "products.productId",

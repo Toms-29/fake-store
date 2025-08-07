@@ -6,7 +6,6 @@ import Cart from "../models/Cart.model.js";
 import Product from "../models/Product.model.js";
 import { ENV } from "../config/env.js";
 import { HttpError } from "../errors/HttpError.js";
-import { ObjectIdSchema } from "../schema";
 import { confirmPurchase } from "../services/order.service.js";
 
 
@@ -14,7 +13,7 @@ const stripe = new Stripe(ENV.STRIPE_SECRET_KEY)
 
 export const createCheckoutSession = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const userId = ObjectIdSchema.parse(req.user.id)
+        const userId = req.user.id
 
         const user = await User.findById(userId)
         if (!user) { throw new HttpError('User not found', 404) }

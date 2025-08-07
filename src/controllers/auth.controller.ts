@@ -4,7 +4,6 @@ import crypto from "crypto"
 
 import User from "../models/User.model.js"
 import { createAccessToken, createRefreshToken } from "../lib/jwt.js"
-import { RegisterUserSchema, LoginUserSchema, EmailSchema, PasswordSchema, ObjectIdSchema } from "../schema"
 import { HttpError } from "../errors/HttpError.js"
 import { parseUser } from "../utils/parse/parseUser.js"
 
@@ -19,7 +18,7 @@ interface UserRequest {
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { userName, email, password } = RegisterUserSchema.parse(req.body)
+        const { userName, email, password } = req.body
 
         const userExists = await User.findOne({ email: email })
 
@@ -74,7 +73,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email, password } = LoginUserSchema.parse(req.body)
+        const { email, password } = req.body
 
         const userFound = await User.findOne({ email: email, isDeleted: false })
         if (!userFound) { throw new HttpError("User not found", 404) }
@@ -119,7 +118,7 @@ export const logout = async (req: Request, res: Response) => {
 
 export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const email = EmailSchema.parse(req.body.email)
+        const { email } = req.body
 
         const user = await User.findOne({ email })
         if (!user) { throw new HttpError("User not found", 404) }
@@ -142,7 +141,7 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
 export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { token } = req.params
-        const password = PasswordSchema.parse(req.body.password)
+        const { password } = req.body
 
         const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
 
@@ -165,7 +164,7 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
 
 export const profile = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const userId = ObjectIdSchema.parse(req.user.id)
+        const userId = req.user.id
 
         const userFound = await User.findOne({ _id: userId, isDeleted: false }) as UserRequest
         if (!userFound) { throw new HttpError("User not found", 404) }
