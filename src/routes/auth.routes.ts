@@ -6,16 +6,19 @@ import { isOwnerOrAdminFactory } from "../middlewares/adminOrOwner.js"
 import { createRateLimiter } from "../middlewares/rateLimit.js"
 import { validateSchema } from "../middlewares/validateSchema.js"
 import { EmailSchema, IdParamSchema, LoginUserSchema, PasswordSchema, RegisterUserSchema } from "../schema"
+import { sanitizeQuery } from "../middlewares/sanitizeQuery.js"
 
 const router = Router();
 
 router.post("/auth/register",
     createRateLimiter(15, 5, "Too many registration attempts. Please wait and try again."),
+    sanitizeQuery,
     validateSchema({ body: RegisterUserSchema }),
     register)
 
 router.post("/auth/login",
     createRateLimiter(10, 5, "Too many login attempts. Please try again later."),
+    sanitizeQuery,
     validateSchema({ body: LoginUserSchema }),
     login)
 
@@ -25,6 +28,7 @@ router.post("/auth/forgot-password",
     authRequired,
     isOwnerOrAdminFactory("owner", (req) => req.user.id),
     createRateLimiter(15, 5, "Too many password reset requests. Try again later."),
+    sanitizeQuery,
     validateSchema({ body: EmailSchema }),
     forgotPassword)
 
@@ -32,6 +36,7 @@ router.post("/auth/reset-password/:token",
     authRequired,
     isOwnerOrAdminFactory("owner", (req) => req.user.id),
     createRateLimiter(10, 5, "Too many password change attempts. Please wait."),
+    sanitizeQuery,
     validateSchema({ body: PasswordSchema }),
     resetPassword)
 

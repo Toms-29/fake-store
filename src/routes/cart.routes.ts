@@ -5,6 +5,7 @@ import { addToCart, updateCart, deleteCartItem, deleteCart, getCart, clearCart }
 import { isOwnerOrAdminFactory } from '../middlewares/adminOrOwner.js';
 import { validateSchema } from '../middlewares/validateSchema.js';
 import { IdParamSchema, QuantitySchema } from '../schema';
+import { sanitizeQuery } from '../middlewares/sanitizeQuery.js';
 
 const router = Router()
 
@@ -16,12 +17,14 @@ router.get('/cart',
 router.post('/cart/:productId',
     authRequired,
     isOwnerOrAdminFactory("owner", (req) => req.user.id),
+    sanitizeQuery,
     validateSchema({ body: QuantitySchema, params: IdParamSchema }),
     addToCart)
 
 router.put('/cart/:productId',
     authRequired,
     isOwnerOrAdminFactory("owner", (req) => req.user.id),
+    sanitizeQuery,
     validateSchema({ body: QuantitySchema, params: IdParamSchema }),
     updateCart)
 

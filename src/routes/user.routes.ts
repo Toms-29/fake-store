@@ -6,6 +6,7 @@ import { roleVerify } from "../middlewares/roleVerify.js";
 import { isOwnerOrAdminFactory } from "../middlewares/adminOrOwner.js";
 import { validateSchema } from "../middlewares/validateSchema.js";
 import { IdParamSchema, updatedUserSchema, UserNameQuerySchema } from "../schema";
+import { sanitizeQuery } from "../middlewares/sanitizeQuery.js";
 
 const router = Router()
 
@@ -18,12 +19,14 @@ router.get("/users/:userId",
 router.get("/users",
     authRequired,
     roleVerify,
+    sanitizeQuery,
     validateSchema({ query: UserNameQuerySchema.partial() }),
     getUsers)
 
 router.put("/users/:userId",
     authRequired,
     isOwnerOrAdminFactory("ownerOrAdmin", (req) => req.params.userId),
+    sanitizeQuery,
     validateSchema({ params: IdParamSchema, body: updatedUserSchema }),
     updateUser)
 

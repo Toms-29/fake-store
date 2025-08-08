@@ -6,6 +6,7 @@ import { roleVerify } from "../middlewares/roleVerify.js";
 import { isOwnerOrAdminFactory } from "../middlewares/adminOrOwner.js";
 import { validateSchema } from "../middlewares/validateSchema.js";
 import { IdParamSchema, RequestRoleChangeSchema } from "../schema";
+import { sanitizeQuery } from "../middlewares/sanitizeQuery.js";
 
 const router = Router()
 
@@ -35,6 +36,7 @@ router.put('/role/reject/:requestId',
 router.post('/role',
     authRequired,
     isOwnerOrAdminFactory("owner", (req) => req.user.id),
+    sanitizeQuery,
     validateSchema({ body: RequestRoleChangeSchema, user: IdParamSchema }),
     requestRoleChange)
 
