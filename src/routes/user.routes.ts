@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import { authRequired } from "../middlewares/validateToken.js";
-import { deleteUser, getUser, getUsers, updateUser } from "../controllers/user.controller.js";
+import { deleteUser, getUser, getUsers, updateUser, userRestore } from "../controllers/user.controller.js";
 import { roleVerify } from "../middlewares/roleVerify.js";
 import { isOwnerOrAdminFactory } from "../middlewares/adminOrOwner.js";
 import { validateSchema } from "../middlewares/validateSchema.js";
@@ -29,6 +29,12 @@ router.put("/users/:userId",
     sanitizeQuery,
     validateSchema({ params: IdParamSchema, body: updatedUserSchema }),
     updateUser)
+
+router.post("/users/:userId",
+    authRequired,
+    isOwnerOrAdminFactory("admin", (req) => req.params.userId),
+    validateSchema({ params: IdParamSchema }),
+    userRestore)
 
 router.delete("/users/:userId",
     authRequired,

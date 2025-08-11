@@ -1,7 +1,7 @@
 import { Router } from "express"
 
 import { authRequired } from "../middlewares/validateToken.js"
-import { addComment, deleteComment, getProductComments, getUserComments, updateComment } from "../controllers/comment.controller.js"
+import { addComment, commentRestore, deleteComment, getProductComments, getUserComments, updateComment } from "../controllers/comment.controller.js"
 import { isOwnerOrAdminFactory } from "../middlewares/adminOrOwner.js"
 import { createRateLimiter } from "../middlewares/rateLimit.js"
 import { validateSchema } from "../middlewares/validateSchema.js"
@@ -35,12 +35,16 @@ router.put("/comment/:commentId",
     validateSchema({ params: IdParamSchema, body: TextOfCommentSchema }),
     updateComment)
 
+router.post("/comments/restore/:commentId",
+    authRequired,
+    isOwnerOrAdminFactory("admin", (req) => req.user.id),
+    validateSchema({ params: IdParamSchema }),
+    commentRestore)
+
 router.delete("/comments/:commentId",
     authRequired,
     isOwnerOrAdminFactory("ownerOrAdmin", (req) => req.user.id),
     validateSchema({ params: IdParamSchema }),
     deleteComment)
-
-
 
 export default router

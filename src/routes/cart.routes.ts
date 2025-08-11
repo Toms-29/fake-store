@@ -1,11 +1,12 @@
 import { Router } from 'express';
 
 import { authRequired } from '../middlewares/validateToken.js';
-import { addToCart, updateCart, deleteCartItem, deleteCart, getCart, clearCart } from '../controllers/cart.controller.js';
+import { addToCart, updateCart, deleteCartItem, deleteCart, getCart, clearCart, cartRestore } from '../controllers/cart.controller.js';
 import { isOwnerOrAdminFactory } from '../middlewares/adminOrOwner.js';
 import { validateSchema } from '../middlewares/validateSchema.js';
 import { IdParamSchema, QuantitySchema } from '../schema';
 import { sanitizeQuery } from '../middlewares/sanitizeQuery.js';
+import { roleVerify } from '../middlewares/roleVerify.js';
 
 const router = Router()
 
@@ -40,9 +41,15 @@ router.delete('/cart/clear',
     validateSchema({ user: IdParamSchema }),
     clearCart)
 
+router.post('/cart/:cartId',
+    authRequired,
+    roleVerify,
+    validateSchema({ params: IdParamSchema }),
+    cartRestore)
+
 router.delete('/cart/:cartId',
     authRequired,
-    isOwnerOrAdminFactory("owner", (req) => req.user.id),
+    isOwnerOrAdminFactory("ownerOrAdmin", (req) => req.user.id),
     validateSchema({ params: IdParamSchema }),
     deleteCart)
 

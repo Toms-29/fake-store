@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import { authRequired } from "../middlewares/validateToken.js";
-import { aceptRoleChange, getRequestRoleChange, getRequestsRoleChange, rejectRoleChange, requestRoleChange } from "../controllers/role.controller.js";
+import { aceptRoleChange, deleteRequest, getRequestRoleChange, getRequestsRoleChange, rejectRoleChange, requestRoleChange, restoreRequest } from "../controllers/role.controller.js";
 import { roleVerify } from "../middlewares/roleVerify.js";
 import { isOwnerOrAdminFactory } from "../middlewares/adminOrOwner.js";
 import { validateSchema } from "../middlewares/validateSchema.js";
@@ -39,5 +39,19 @@ router.post('/role',
     sanitizeQuery,
     validateSchema({ body: RequestRoleChangeSchema, user: IdParamSchema }),
     requestRoleChange)
+
+router.post('/role/:requestId',
+    authRequired,
+    isOwnerOrAdminFactory("admin", (req) => req.user.id),
+    sanitizeQuery,
+    validateSchema({ params: IdParamSchema }),
+    restoreRequest)
+
+router.delete('/role/:requestId',
+    authRequired,
+    isOwnerOrAdminFactory("ownerOrAdmin", (req) => req.user.id),
+    sanitizeQuery,
+    validateSchema({ params: IdParamSchema }),
+    deleteRequest)
 
 export default router

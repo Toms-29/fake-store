@@ -1,12 +1,13 @@
 import { Router } from "express"
 
-import { getOrder, getOrders } from "../controllers/order.controller.js"
+import { deleteOrder, getOrder, getOrders, orderRestore } from "../controllers/order.controller.js"
 import { isOwnerOrAdminFactory } from "../middlewares/adminOrOwner.js"
 import { authRequired } from "../middlewares/validateToken.js"
 import { createRateLimiter } from "../middlewares/rateLimit.js"
 import { validateSchema } from "../middlewares/validateSchema.js"
 import { OrderQuerySchema, IdParamSchema } from "../schema"
 import { sanitizeQuery } from "../middlewares/sanitizeQuery.js"
+import { roleVerify } from "../middlewares/roleVerify.js"
 
 const router = Router()
 
@@ -23,5 +24,17 @@ router.get("/orders/:orderId",
     isOwnerOrAdminFactory("ownerOrAdmin", (req) => req.user.id),
     validateSchema({ params: IdParamSchema }),
     getOrder)
+
+router.post("/orders/:orderId",
+    authRequired,
+    roleVerify,
+    validateSchema({ params: IdParamSchema }),
+    orderRestore)
+
+router.delete("/orders/:orderId",
+    authRequired,
+    roleVerify,
+    validateSchema({ params: IdParamSchema }),
+    deleteOrder)
 
 export default router

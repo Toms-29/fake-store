@@ -162,7 +162,7 @@ export const deleteCart = async (req: Request, res: Response, next: NextFunction
     }
 }
 
-export const commentRestore = async (req: Request, res: Response, next: NextFunction) => {
+export const cartRestore = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { cartId } = req.params
 

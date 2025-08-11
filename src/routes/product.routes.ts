@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import { authRequired } from "../middlewares/validateToken.js";
-import { getProducts, getProduct, addProduct, updateProduct, deleteProduct } from "../controllers/product.controller.js";
+import { getProducts, getProduct, addProduct, updateProduct, deleteProduct, productRestore } from "../controllers/product.controller.js";
 import { roleVerify } from "../middlewares/roleVerify.js";
 import { createRateLimiter } from "../middlewares/rateLimit.js";
 import { validateSchema } from "../middlewares/validateSchema.js";
@@ -34,6 +34,12 @@ router.put("/products/:productId",
     sanitizeQuery,
     validateSchema({ params: IdParamSchema, body: ProductUpdateSchema }),
     updateProduct)
+
+router.post("/products/:productId",
+    authRequired,
+    roleVerify,
+    validateSchema({ params: IdParamSchema }),
+    productRestore)
 
 router.delete("/products/:productId",
     authRequired,
