@@ -5,6 +5,7 @@ import User from '../models/User.model.js'
 import { HttpError } from '../errors/HttpError.js'
 import { parseRole } from '../utils/parse/parseRole.js'
 import { queryStatus } from '../types/role.types.js'
+import { restoreRole, softDeleteRole } from '../services/role.service.js'
 
 export const requestRoleChange = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -103,6 +104,32 @@ export const getRequestRoleChange = async (req: Request, res: Response, next: Ne
         const parsedRequest = parseRole(request)
 
         res.status(200).json(parsedRequest)
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const deleteRequest = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { requestId } = req.params
+
+        const deletedRequest = softDeleteRole(requestId)
+        if (!deletedRequest) { throw new HttpError("Request not found", 404) }
+
+        res.status(200).json({ message: "Request deleted" })
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const restoreRequest = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { requestId } = req.params
+
+        const restore = restoreRole(requestId)
+        if (!restore) { throw new HttpError("Request not found", 404) }
+
+        res.status(200).json({ message: "Request restored" })
     } catch (error) {
         next(error)
     }

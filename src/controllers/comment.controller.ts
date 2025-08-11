@@ -4,6 +4,7 @@ import Comment from "../models/Comment.model.js"
 import Product from "../models/Product.model.js"
 import { parseComment } from "../utils/parse/parseComment.js"
 import { HttpError } from "../errors/HttpError.js"
+import { restoreComment, softDeleteComment } from "../services/comment.service.js"
 
 export const addComment = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -94,15 +95,23 @@ export const deleteComment = async (req: Request, res: Response, next: NextFunct
     try {
         const { commentId } = req.params
 
-        const deletedComment = await Comment.findByIdAndDelete(commentId)
-        if (!deletedComment) { throw new HttpError("Comments not found", 404) }
-
-        await Product.findOneAndUpdate(
-            { comments: commentId },
-            { $pull: { comments: commentId } },
-            { new: true })
+        const deletedComment = softDeleteComment(commentId)
+        if (!deletedComment) { throw new HttpError("Comment not found", 404) }
 
         res.status(200).json({ message: "Comment deleted successfully" })
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const commentRestore = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { commentId } = req.params
+
+        const restore = restoreComment(commentId)
+        if (!restore) { throw new HttpError("Comment not found", 404) }
+
+        res.status(200).json({ message: "Comment restored" })
     } catch (error) {
         next(error)
     }

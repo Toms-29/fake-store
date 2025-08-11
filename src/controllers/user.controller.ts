@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs'
 import User from "../models/User.model.js";
 import { HttpError } from "../errors/HttpError.js";
 import { parseUser } from "../utils/parse/parseUser.js";
+import { restoreUser, softDeleteUser } from "../services/user.service.js";
 
 export const getUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -80,13 +81,23 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
 
         if (req.user.role !== "admin" && req.user.id !== userId) { throw new HttpError("Forbidden", 403) }
 
-        const deletedUser = await User.findByIdAndUpdate(userId, {
-            isDeleted: true,
-            deletedAt: new Date()
-        })
+        const deletedUser = softDeleteUser(userId)
         if (!deletedUser) { throw new HttpError("User not found", 404) }
 
         res.status(200).json({ message: "User deleted" })
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const userRestore = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { userId } = req.params
+
+        const restore = restoreUser(userId)
+        if (!restore) { throw new HttpError("User not found", 404) }
+
+        res.status(200).json({ message: "User restored" })
     } catch (error) {
         next(error)
     }

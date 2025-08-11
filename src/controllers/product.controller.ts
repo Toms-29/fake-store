@@ -6,6 +6,7 @@ import { parseProduct } from '../utils/parse/parseProduct.js';
 import { HttpError } from '../errors/HttpError.js';
 import { ProductStatus } from '../types/product.types.js';
 import { z } from "zod"
+import { restoreProduct, softDeleteProduct } from '../services/product.service.js';
 
 
 const commentsPopulateConfig = {
@@ -118,10 +119,23 @@ export const deleteProduct = async (req: Request, res: Response, next: NextFunct
     try {
         const { productId } = req.params
 
-        const deletedProduct = await Product.findByIdAndDelete(productId)
+        const deletedProduct = softDeleteProduct(productId)
         if (!deletedProduct) { throw new HttpError("Product not found", 404) }
 
         res.status(200).json({ message: "Product deleted" })
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const productRestore = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { productId } = req.params
+
+        const restore = restoreProduct(productId)
+        if (!restore) { throw new HttpError("Product not found", 404) }
+
+        res.status(200).json({ message: "Product restored" })
     } catch (error) {
         next(error)
     }

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 
 import Cart from "../models/Cart.model.js";
 import { HttpError } from "../errors/HttpError.js";
-import { verifyAmount, verifyCartExist, verifyProductExist, verifyProductInCart } from "../services/cart.service.js";
+import { restoreCart, softDeleteCart, verifyAmount, verifyCartExist, verifyProductExist, verifyProductInCart } from "../services/cart.service.js";
 import { CartType } from "../types/cart.types.js";
 import { ProductsType } from "../types/product.types.js";
 import { parseCart } from "../utils/parse/parseCart.js";
@@ -153,10 +153,23 @@ export const deleteCart = async (req: Request, res: Response, next: NextFunction
     try {
         const { cartId } = req.params
 
-        const cartDeleted = await Cart.findByIdAndDelete(cartId)
+        const cartDeleted = softDeleteCart(cartId)
         if (!cartDeleted) { throw new HttpError("Cart not found", 404) }
 
         res.status(200).json({ message: "Cart deleted successfully" })
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const commentRestore = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { cartId } = req.params
+
+        const restore = restoreCart(cartId)
+        if (!restore) { throw new HttpError("Cart not found", 404) }
+
+        res.status(200).json({ message: "Cart restored" })
     } catch (error) {
         next(error)
     }
