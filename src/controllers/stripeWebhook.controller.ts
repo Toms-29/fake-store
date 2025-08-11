@@ -7,7 +7,6 @@ import { createOrderFromStripeSession, restoreProductsFromCart } from "../servic
 
 const stripe = new Stripe(ENV.STRIPE_SECRET_KEY)
 
-
 export const handleStripeWebhook = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const sig = req.headers['stripe-signature'] as string
@@ -20,8 +19,6 @@ export const handleStripeWebhook = async (req: Request, res: Response, next: Nex
         } catch (error) {
             throw new HttpError("Invalid Stripe signature", 400)
         }
-
-
 
         try {
             const session = event.data.object as Stripe.Checkout.Session

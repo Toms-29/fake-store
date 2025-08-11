@@ -1,9 +1,11 @@
-import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose"
+import { getModelForClass, modelOptions, plugin, prop } from "@typegoose/typegoose"
 import type { Ref } from "@typegoose/typegoose"
 
 import { ProductStatus } from "../types/product.types.js"
 import { Comment } from "./Comment.model.js"
+import { softDeletePlugin } from "../middlewares/softDeletePlugin.js"
 
+@plugin(softDeletePlugin)
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Product {
     @prop({ required: true, trim: true, maxlength: 100, index: true })

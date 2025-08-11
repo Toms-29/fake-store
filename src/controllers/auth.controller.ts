@@ -75,7 +75,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     try {
         const { email, password } = req.body
 
-        const userFound = await User.findOne({ email: email, isDeleted: false })
+        const userFound = await User.findOne({ email: email })
         if (!userFound) { throw new HttpError("User not found", 404) }
 
         const isMatch = await bcrypt.compare(password, userFound.password)
@@ -166,7 +166,7 @@ export const profile = async (req: Request, res: Response, next: NextFunction) =
     try {
         const userId = req.user.id
 
-        const userFound = await User.findOne({ _id: userId, isDeleted: false }) as UserRequest
+        const userFound = await User.findOne({ _id: userId }) as UserRequest
         if (!userFound) { throw new HttpError("User not found", 404) }
 
         const userParsed = parseUser(userFound)

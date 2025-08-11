@@ -1,9 +1,11 @@
-import { modelOptions, getModelForClass, prop, } from "@typegoose/typegoose";
+import { modelOptions, getModelForClass, prop, plugin, } from "@typegoose/typegoose";
 import type { Ref } from "@typegoose/typegoose";
 import { User } from "./User.model.js";
 import { queryStatus } from "../types/role.types.js";
 import { UserRole } from "../types/user.types.js";
+import { softDeletePlugin } from "../middlewares/softDeletePlugin.js";
 
+@plugin(softDeletePlugin)
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Role {
     @prop({ required: true, ref: () => User, index: true })

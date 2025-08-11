@@ -1,8 +1,9 @@
-import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose"
+import { getModelForClass, modelOptions, prop, plugin } from "@typegoose/typegoose"
 import type { Ref } from "@typegoose/typegoose";
 import { User } from "./User.model.js"
 import { Product } from "./Product.model.js"
 import { CartStatus } from "../types/cart.types.js";
+import { softDeletePlugin } from "../middlewares/softDeletePlugin.js";
 
 class cartProduct {
     @prop({ ref: () => Product, required: true })
@@ -12,6 +13,7 @@ class cartProduct {
     quantity: number
 }
 
+@plugin(softDeletePlugin)
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Cart {
     @prop({ ref: () => User, required: true, index: true })

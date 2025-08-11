@@ -60,7 +60,10 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
             if (email) { throw new HttpError("Email already in use", 409) }
         }
 
-        const updatedUser = await User.findOneAndUpdate({ _id: userId }, updateFields, { new: true }).select({ password: false })
+        const updatedUser = await User.findOneAndUpdate(
+            { _id: userId, isDeleted: false },
+            updateFields, { new: true })
+            .select({ password: false })
         if (!updatedUser) { throw new HttpError("User not found", 404) }
 
         const parsedUser = parseUser(updatedUser)
