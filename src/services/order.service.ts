@@ -5,6 +5,7 @@ import { HttpError } from "../errors/HttpError.js"
 import { CartType } from "../types/cart.types.js"
 import { Types } from "mongoose"
 import { updateFileds } from "./product.service.js"
+import { restoreById, softDeleteById } from "../utils/softDeleteActions.js"
 
 export const confirmPurchase = async (id: string) => {
     const cart = await Cart.findById(id).populate('products.productId').lean() as CartType;
@@ -77,4 +78,12 @@ export const restoreProductsFromCart = async (session: any) => {
                 operation: 'increase'
             })
         }))
+}
+
+export const softDeleteOrder = async (id: string) => {
+    return softDeleteById(Order, id)
+}
+
+export const restoreOrder = async (id: string) => {
+    return restoreById(Order, id)
 }

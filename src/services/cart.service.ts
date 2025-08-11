@@ -3,7 +3,7 @@ import Product from "../models/Product.model.js";
 import { HttpError } from "../errors/HttpError.js";
 import { CartType } from "../types/cart.types.js";
 import { ProductType } from "../types/product.types.js";
-
+import { restoreById, softDeleteById } from "../utils/softDeleteActions.js"
 
 export const verifyCartExist = async (id: string) => {
     try {
@@ -43,4 +43,12 @@ export const verifyAmount = async (id: string, quantity: number) => {
         console.error("DB error: ", error)
         throw new HttpError("Internal server error", 500)
     }
+}
+
+export const softDeleteCart = async (id: string) => {
+    return softDeleteById(Cart, id)
+}
+
+export const restoreCart = async (id: string) => {
+    return restoreById(Cart, id)
 }

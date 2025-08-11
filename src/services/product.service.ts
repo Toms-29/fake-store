@@ -1,6 +1,7 @@
 import Product from "../models/Product.model.js"
 import { ProductStatus, ProductType, UpdateStockOptions } from "../types/product.types.js"
 import { HttpError } from "../errors/HttpError.js"
+import { restoreById, softDeleteById } from "../utils/softDeleteActions.js"
 
 export const updateFileds = async ({ id, quantity, operation }: UpdateStockOptions) => {
     const product = await Product.findById(id)
@@ -24,4 +25,12 @@ export const updateFileds = async ({ id, quantity, operation }: UpdateStockOptio
     if (operation === 'increase' && updateFields.status === ProductStatus.OUT_OF_STOCK && newAmount > 0) { updateFields.status = ProductStatus.IN_STOCK }
 
     return await Product.findByIdAndUpdate(id, { $set: updateFields })
+}
+
+export const softDeleteProduct = async (id: string) => {
+    return softDeleteById(Product, id)
+}
+
+export const restoreProduct = async (id: string) => {
+    return restoreById(Product, id)
 }
