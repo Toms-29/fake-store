@@ -20,43 +20,23 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     try {
         const { userName, email, password } = req.body
 
-        const userExists = await User.findOne({ email: email })
-
-        if (userExists) {
-            if (!userExists.isDeleted) { throw new HttpError("User already exist", 400) }
-
-            const token = createAccessToken({ id: userExists._id, role: userExists.role })
-            const refreshToken = createRefreshToken({ id: userExists._id })
-
-            userExists.userName = userName
-            userExists.password = await bcrypt.hash(password, 10)
-            userExists.isDeleted = false
-            userExists.refreshToken = refreshToken
-            await userExists.save()
-
-            const userParsed = parseUser(userExists)
-
-            res
-                .cookie("token", token, { httpOnly: true, secure: true })
-                .cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000 })
-                .status(200)
-                .json(userParsed)
-            return
-        }
+        const checkEmail = await User.findOne({ email, isDeleted: false })
+        if (!checkEmail) { throw new HttpError("User already exists", 400) }
 
         const passwordHash = await bcrypt.hash(password, 10)
 
         const newUser = new User({
             userName,
             email,
-            password: passwordHash
+            password: passwordHash,
+            isDeleted: false,
+            deletedAt: null
         })
 
         const token = createAccessToken({ id: newUser._id, role: newUser.role })
         const refreshToken = createRefreshToken({ id: newUser._id })
 
         newUser.refreshToken = refreshToken
-
         await newUser.save()
 
         const userParsed = parseUser(newUser)
