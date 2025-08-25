@@ -76,6 +76,19 @@ export const getProduct = async (req: Request, res: Response, next: NextFunction
     }
 }
 
+export const getTopProducts = async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+        const products = await Product.find().sort({ salesCount: -1 }).limit(10).lean()
+        if (products.length === 0) { throw new HttpError("Products not found", 404) }
+
+        const parsedProducts = products.map(p => parseProduct(p))
+
+        res.status(200).json(parsedProducts)
+    } catch (error) {
+        next(error)
+    }
+}
+
 export const addProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { productName, description, price, amount } = req.body
