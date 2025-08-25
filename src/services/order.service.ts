@@ -66,6 +66,20 @@ export const createOrderFromStripeSession = async (session: any) => {
     }
 }
 
+export const updateSalesCount = async (session: any) => {
+    const line_items = session.line_items?.data
+    if (!line_items || line_items.length === 0) { throw new HttpError("Session without data", 400) }
+
+    Promise.all(
+        line_items.map((items: any) => {
+            Product.findByIdAndUpdate(
+                items.price.product.metadata.mongoProductId,
+                { $inc: { salesCount: items.quantity } }
+            )
+        })
+    )
+}
+
 export const restoreProductsFromCart = async (session: any) => {
     const lineItems = session.line_items?.data
     if (!lineItems || lineItems.length === 0) { throw new HttpError("Session without data", 400) }

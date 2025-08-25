@@ -31,6 +31,9 @@ export class Product {
     @prop({ required: true, enum: ["tech", "learn", "sport", "tools", "garden", "furniture", "kitchen"] })
     category: string
 
+    @prop({ required: true, default: 0 })
+    salesCount: number
+
     @prop({ required: true, min: 0, max: 5, default: 0 })
     rating: number
 
