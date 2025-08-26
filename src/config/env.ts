@@ -19,4 +19,6 @@ export const ENV = {
     STRIPE_WEBHOOK_SECRET: getEnvValue('STRIPE_WEBHOOK_SECRET'),
     STRIPE_SUCCESS_URL: getEnvValue('STRIPE_SUCCESS_URL') || "http://localhost:4000/success",
     STRIPE_CANCEL_URL: getEnvValue('STRIPE_CANCEL_URL') || "http://localhost:4000/cancel",
+    EMAIL_USER: getEnvValue('EMAIL_USER'),
+    EMAIL_USER_PASSWORD: getEnvValue('EMAIL_USER_PASSWORD')
 }

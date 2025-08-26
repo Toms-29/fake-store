@@ -4,6 +4,7 @@ import Stripe from "stripe"
 import { HttpError } from "../errors/HttpError.js"
 import { ENV } from "../config/env.js"
 import { createOrderFromStripeSession, restoreProductsFromCart, updateSalesCount } from "../services/order.service.js"
+import { orderEvent } from "../events/order.event.js"
 
 const stripe = new Stripe(ENV.STRIPE_SECRET_KEY)
 
@@ -29,6 +30,7 @@ export const handleStripeWebhook = async (req: Request, res: Response, next: Nex
                 case "checkout.session.completed":
                     await createOrderFromStripeSession(sessionWithLineItems)
                     await updateSalesCount(sessionWithLineItems)
+                    orderEvent.emit("buy-confirmed", sessionWithLineItems)
                     break
 
                 case "checkout.session.expired":
