@@ -1,10 +1,8 @@
 import { z } from 'zod'
-import { DeleteStatusSchema, ObjectIdSchema, PositiveFloat, PositiveInteger, TimeStampsSchema } from './common.schema.js'
+import { DeleteStatusSchema, ObjectIdSchema, PositiveFloat, PositiveInteger, TimeStampsSchema, ProductName } from './common.schema.js'
 import { CommentedBySchema } from './comment.schema.js'
 
 export const RateSchema = z.object({ rating: z.number().min(1).max(5) })
-
-export const ProductName = z.string().trim().nonempty("Product name is required").min(3).max(100).regex(/^[a-zA-Z0-9-_]+$/, "Solo letras, números, guiones y guiones bajos")
 
 export const ProductStatusSchema = z.enum(["in_stock", "out_of_stock", "pending"])
 

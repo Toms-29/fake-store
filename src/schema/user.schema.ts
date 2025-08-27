@@ -1,7 +1,5 @@
 import { z } from "zod"
-import { DeleteStatusSchema, ObjectIdSchema, TimeStampsSchema } from "./common.schema.js"
-
-export const UserNameSchema = z.string().trim().nonempty("User name is required").min(1).max(15).regex(/^[a-zA-Z0-9-_]+$/, "Solo letras, números, guiones y guiones bajos")
+import { DeleteStatusSchema, ObjectIdSchema, TimeStampsSchema, UserNameSchema } from "./common.schema.js"
 
 export const EmailSchema = z.object({ email: z.string().trim().email() })
 

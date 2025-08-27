@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { DeleteStatusSchema, ObjectIdSchema, TimeStampsSchema } from "./common.schema.js";
-import { UserNameSchema } from "./user.schema.js";
+import { DeleteStatusSchema, ObjectIdSchema, TimeStampsSchema, UserNameSchema } from "./common.schema.js";
 
 export const TextOfCommentSchema = z.object({
     text: z.string().nonempty("Text is required").min(5).max(200, "Text must be less than 500 characters")
