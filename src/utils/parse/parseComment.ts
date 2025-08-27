@@ -1,4 +1,4 @@
-import { ResponseCommentSchema } from "../../schema";
+import { ResponseCommentSchema } from "../../schema/index.js";
 
 export const parseComment = (comment: any) => {
     return ResponseCommentSchema.parse({

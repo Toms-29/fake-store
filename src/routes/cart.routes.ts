@@ -4,7 +4,7 @@ import { authRequired } from '../middlewares/validateToken.js';
 import { addToCart, updateCart, deleteCartItem, deleteCart, getCart, clearCart, cartRestore } from '../controllers/cart.controller.js';
 import { isOwnerOrAdminFactory } from '../middlewares/adminOrOwner.js';
 import { validateSchema } from '../middlewares/validateSchema.js';
-import { IdParamSchema, QuantitySchema } from '../schema';
+import { IdParamSchema, QuantitySchema } from '../schema/index.js';
 import { sanitizeQuery } from '../middlewares/sanitizeQuery.js';
 import { roleVerify } from '../middlewares/roleVerify.js';
 

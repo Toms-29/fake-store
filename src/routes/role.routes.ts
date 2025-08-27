@@ -5,7 +5,7 @@ import { aceptRoleChange, deleteRequest, getRequestRoleChange, getRequestsRoleCh
 import { roleVerify } from "../middlewares/roleVerify.js";
 import { isOwnerOrAdminFactory } from "../middlewares/adminOrOwner.js";
 import { validateSchema } from "../middlewares/validateSchema.js";
-import { IdParamSchema, RequestRoleChangeSchema } from "../schema";
+import { IdParamSchema, RequestRoleChangeSchema } from "../schema/index.js";
 import { sanitizeQuery } from "../middlewares/sanitizeQuery.js";
 
 const router = Router()

@@ -1,4 +1,4 @@
-import { ResponseRoleSchema } from "../../schema";
+import { ResponseRoleSchema } from "../../schema/index.js";
 
 export const parseRole = (role: any) => {
     return ResponseRoleSchema.parse({

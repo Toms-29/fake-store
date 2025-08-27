@@ -4,7 +4,7 @@ import { authRequired } from "../middlewares/validateToken.js";
 import { createCheckoutSession } from "../controllers/payment.controller.js";
 import { isOwnerOrAdminFactory } from "../middlewares/adminOrOwner.js";
 import { validateSchema } from "../middlewares/validateSchema.js";
-import { IdParamSchema } from "../schema";
+import { IdParamSchema } from "../schema/index.js";
 
 const router = Router()
 

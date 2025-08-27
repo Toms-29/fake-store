@@ -5,7 +5,7 @@ import { getProducts, getProduct, addProduct, updateProduct, deleteProduct, prod
 import { roleVerify } from "../middlewares/roleVerify.js";
 import { createRateLimiter } from "../middlewares/rateLimit.js";
 import { validateSchema } from "../middlewares/validateSchema.js";
-import { IdParamSchema, AddProductSchema, ProductQuerySchema, ProductUpdateSchema } from "../schema";
+import { IdParamSchema, AddProductSchema, ProductQuerySchema, ProductUpdateSchema } from "../schema/index.js";
 import { sanitizeQuery } from "../middlewares/sanitizeQuery.js";
 
 const router = Router();

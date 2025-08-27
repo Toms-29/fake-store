@@ -1,4 +1,4 @@
-import { ResponseProductSchema } from "../../schema"
+import { ResponseProductSchema } from "../../schema/index.js"
 
 export const parseProduct = (product: any) => {
     return ResponseProductSchema.parse({

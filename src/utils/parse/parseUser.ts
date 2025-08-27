@@ -1,4 +1,4 @@
-import { ResponseAuthUserSchema } from "../../schema"
+import { ResponseAuthUserSchema } from "../../schema/index.js"
 
 export const parseUser = (user: any) => {
     return ResponseAuthUserSchema.parse({

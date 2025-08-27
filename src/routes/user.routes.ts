@@ -5,7 +5,7 @@ import { deleteUser, getUser, getUsers, updateUser, userRestore } from "../contr
 import { roleVerify } from "../middlewares/roleVerify.js";
 import { isOwnerOrAdminFactory } from "../middlewares/adminOrOwner.js";
 import { validateSchema } from "../middlewares/validateSchema.js";
-import { IdParamSchema, updatedUserSchema, UserNameQuerySchema } from "../schema";
+import { IdParamSchema, updatedUserSchema, UserNameQuerySchema } from "../schema/index.js";
 import { sanitizeQuery } from "../middlewares/sanitizeQuery.js";
 
 const router = Router()

@@ -1,4 +1,4 @@
-import { ResponseOrderSchema } from "../../schema"
+import { ResponseOrderSchema } from "../../schema/index.js"
 
 export const parseOrder = (order: any) => {
     return ResponseOrderSchema.parse({

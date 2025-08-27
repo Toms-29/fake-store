@@ -5,7 +5,7 @@ import { addComment, commentRestore, deleteComment, getProductComments, getUserC
 import { isOwnerOrAdminFactory } from "../middlewares/adminOrOwner.js"
 import { createRateLimiter } from "../middlewares/rateLimit.js"
 import { validateSchema } from "../middlewares/validateSchema.js"
-import { IdParamSchema, TextOfCommentSchema } from "../schema"
+import { IdParamSchema, TextOfCommentSchema } from "../schema/index.js"
 import { sanitizeQuery } from "../middlewares/sanitizeQuery.js"
 
 const router = Router()

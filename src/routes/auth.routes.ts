@@ -5,7 +5,7 @@ import { authRequired } from "../middlewares/validateToken.js"
 import { isOwnerOrAdminFactory } from "../middlewares/adminOrOwner.js"
 import { createRateLimiter } from "../middlewares/rateLimit.js"
 import { validateSchema } from "../middlewares/validateSchema.js"
-import { EmailSchema, IdParamSchema, LoginUserSchema, PasswordSchema, RegisterUserSchema } from "../schema"
+import { EmailSchema, IdParamSchema, LoginUserSchema, PasswordSchema, RegisterUserSchema } from "../schema/index.js"
 import { sanitizeQuery } from "../middlewares/sanitizeQuery.js"
 
 const router = Router();

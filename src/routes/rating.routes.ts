@@ -4,7 +4,7 @@ import { authRequired } from "../middlewares/validateToken.js"
 import { isOwnerOrAdminFactory } from "../middlewares/adminOrOwner.js"
 import { rateProduct } from "../controllers/rating.controller.js"
 import { validateSchema } from "../middlewares/validateSchema.js"
-import { RateSchema, IdParamSchema } from "../schema"
+import { RateSchema, IdParamSchema } from "../schema/index.js"
 import { sanitizeQuery } from "../middlewares/sanitizeQuery.js"
 
 const router = Router()

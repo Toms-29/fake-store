@@ -1,7 +1,7 @@
 import { Response, Request, NextFunction } from "express"
 
 import Order from "../models/Order.model.js"
-import { OrderQuerySchema } from "../schema"
+import { OrderQuerySchema } from "../schema/index.js"
 import { HttpError } from "../errors/HttpError.js"
 import { parseOrder } from "../utils/parse/parseOrder.js"
 import { z } from "zod"

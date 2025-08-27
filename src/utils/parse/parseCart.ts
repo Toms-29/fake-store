@@ -1,4 +1,4 @@
-import { ResponseCartSchema } from "../../schema";
+import { ResponseCartSchema } from "../../schema/index.js";
 
 export const parseCart = (cart: any) => {
     return ResponseCartSchema.parse({
