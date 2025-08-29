@@ -12,8 +12,8 @@ export class Rating {
     @prop({ ref: () => User, required: true })
     userId: Ref<User>
 
-    @prop({ required: true, min: 1, max: 5 })
-    rating: number
+    @prop({ required: true, default: 0, min: 0, max: 5 })
+    userRating: number
 }
 
 const RatingModel = getModelForClass(Rating)

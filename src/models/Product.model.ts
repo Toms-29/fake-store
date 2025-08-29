@@ -37,6 +37,9 @@ export class Product {
     @prop({ required: true, min: 0, max: 5, default: 0 })
     rating: number
 
+    @prop({ required: true, default: 0, min: 0 })
+    ratingCuantity: number
+
     @prop({ required: true })
     amount: number
 
