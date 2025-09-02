@@ -63,7 +63,7 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
 
         const updatedUser = await User.findOneAndUpdate(
             { _id: userId, isDeleted: false },
-            updateFields, { new: true })
+            updateFields, { new: true, context: req.user.id })
             .select({ password: false })
         if (!updatedUser) { throw new HttpError("User not found", 404) }
 

@@ -1,8 +1,10 @@
 import { prop, getModelForClass, modelOptions, plugin } from "@typegoose/typegoose"
 import { UserRole } from "../types/user.types.js"
 import { softDeletePlugin } from "../middlewares/softDeletePlugin.js"
+import { userChangeLogPlugin } from "../middlewares/UserChangeLogPlugin.js"
 
 @plugin(softDeletePlugin)
+@plugin(userChangeLogPlugin)
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class User {
     @prop({ required: true, trim: true, maxlength: 15, minlength: 1, index: true })
