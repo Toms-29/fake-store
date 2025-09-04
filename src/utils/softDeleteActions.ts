@@ -1,17 +1,17 @@
 import { DocumentType } from "@typegoose/typegoose"
 
-export const softDeleteById = async <T>(model: any, id: string): Promise<DocumentType<T> | null> => {
+export const softDeleteById = async <T>(model: any, id: string, context?: string): Promise<DocumentType<T> | null> => {
     return model.findByIdAndUpdate(
         id,
         { isDeleted: true, deletedAt: new Date() },
-        { new: true }
+        { new: true, context: context }
     )
 }
 
-export const restoreById = async <T>(model: any, id: string): Promise<DocumentType<T> | null> => {
+export const restoreById = async <T>(model: any, id: string, context?: string): Promise<DocumentType<T> | null> => {
     return model.findByIdAndUpdate(
         id,
         { isDeleted: false, deletedAt: null },
-        { new: true }
+        { new: true, context: context }
     )
 }

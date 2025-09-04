@@ -81,7 +81,7 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
 
         if (req.user.role !== "admin" && req.user.id !== userId) { throw new HttpError("Forbidden", 403) }
 
-        const deletedUser = softDeleteUser(userId)
+        const deletedUser = softDeleteUser(userId, req.user.id)
         if (!deletedUser) { throw new HttpError("User not found", 404) }
 
         res.status(200).json({ message: "User deleted" })
@@ -94,7 +94,7 @@ export const userRestore = async (req: Request, res: Response, next: NextFunctio
     try {
         const { userId } = req.params
 
-        const restore = restoreUser(userId)
+        const restore = restoreUser(userId, req.user.id)
         if (!restore) { throw new HttpError("User not found", 404) }
 
         res.status(200).json({ message: "User restored" })
