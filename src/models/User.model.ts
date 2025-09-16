@@ -1,7 +1,7 @@
 import { prop, getModelForClass, modelOptions, plugin } from "@typegoose/typegoose"
 import { UserRole } from "../types/user.types.js"
 import { softDeletePlugin } from "../middlewares/softDeletePlugin.js"
-import { userChangeLogPlugin } from "../middlewares/UserChangeLogPlugin.js"
+import { userChangeLogPlugin } from "../middlewares/userChangeLogPlugin.js"
 
 @plugin(softDeletePlugin)
 @plugin(userChangeLogPlugin)

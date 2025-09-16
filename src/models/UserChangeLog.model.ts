@@ -5,10 +5,10 @@ import mongoose from "mongoose"
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class UserChangeLog {
-    @prop({ required: true, ref: () => User })
+    @prop({ required: true, ref: () => 'User' })
     userId!: Ref<User>
 
-    @prop({ ref: () => User })
+    @prop({ ref: () => 'User' })
     changedBy?: Ref<User>
 
     @prop({ required: true })

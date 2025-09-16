@@ -1,4 +1,4 @@
-import User from "../models/User.model.js"
+import { Schema } from "mongoose"
 import UserChangeLog from "../models/UserChangeLog.model.js"
 import { TRACKED_USER_FIELDS } from "../types/user.types.js"
 
@@ -8,8 +8,8 @@ interface UpdateContext {
     }
 }
 
-export function userChangeLogPlugin() {
-    User.schema.post("findOneAndUpdate", async function (doc: any) {
+export function userChangeLogPlugin(schema: Schema) {
+    schema.post("findOneAndUpdate", async function (doc: any) {
         if (!doc) return
 
         const update = this.getUpdate() as Record<string, any>
