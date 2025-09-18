@@ -32,16 +32,27 @@ Este proyecto busca simular una **plataforma de venta online** completa, aplican
 ---
 
 ## 🚀 Instalación y uso
-**Instalar dependencias**: npm install
+**Clonar el repositorio**:  
+```bash
+git clone https://github.com/Toms-29/fake-store.git  
+cd fake-store
+```
 
-**Variables de entorno**: 
-Crear un archivo .env en la raíz con los siguientes valores:
-- PORT=4000
-- MONGO_URI=mongodb://localhost:27017/fake-store
-- JWT_SECRET=supersecret
-- STRIPE_SECRET_KEY=sk_test_123456789
-- STRIPE_SUCCESS_URL=http://localhost:5173/success
-- STRIPE_CANCEL_URL=http://localhost:5173/cancel
+**Instalar dependencias**:  
+```bash
+npm install
+```
+
+**Variables de entorno**:  
+Crear un archivo .env en la raíz con los siguientes valores:  
+```bash
+PORT=4000
+MONGO_URI=mongodb://localhost:27017/fake-store
+JWT_SECRET=supersecret
+STRIPE_SECRET_KEY=sk_test_123456789
+STRIPE_SUCCESS_URL=http://localhost:5173/success
+STRIPE_CANCEL_URL=http://localhost:5173/cancel
+```
 
 **Ejecutar en desarrollo**: npm run dev
 
@@ -53,14 +64,10 @@ La documentación interactiva está disponible en Swagger:
 👉 http://localhost:4000/api-docs  
 (En construcción, pronto disponible)
 
-### Clonar el repositorio
-git clone https://github.com/Toms-29/fake-store.git  
-cd fake-store
-
 ---
 
 ## 🖼️ Frontend
-Este proyecto cuenta con un frontend en desarrollo (React/Next.js recomendado).  
+Este proyecto cuenta con un frontend en desarrollo (React/Next.js).  
 Próximamente se integrará con la API.  
 (En construcción, pronto disponible)
 
