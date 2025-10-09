@@ -9,7 +9,7 @@ import { sanitizeQuery } from "../middlewares/sanitizeQuery.js"
 
 const router = Router()
 
-router.put("/rating",
+router.put("/rating/:productId",
     authRequired,
     isOwnerOrAdminFactory("owner", (req) => req.user.id),
     sanitizeQuery,

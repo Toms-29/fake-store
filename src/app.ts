@@ -3,6 +3,9 @@ import cors from "cors"
 import morgan from "morgan"
 import cookieParser from "cookie-parser"
 
+import swaggerUi from "swagger-ui-express"
+import YAML from "yamljs"
+
 import authRoutes from "./routes/auth.routes.js"
 import productRoutes from "./routes/product.routes.js"
 import commentRoutes from "./routes/comment.routes.js"
@@ -24,6 +27,8 @@ app.use(helmetOptions)
 app.use(morgan('dev'))
 app.use(cookieParser())
 
+const swaggerDocument = YAML.load("./src/swagger.yaml")
+
 app.use("/stripe", webhookRotes)
 
 app.use(express.json());
@@ -36,6 +41,8 @@ app.use("/api", userRoutes)
 app.use("/api", roleRoutes)
 app.use("/api", paymentRoutes)
 app.use("/api", orderRoutes)
+
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
 app.use(errorHandler)
 

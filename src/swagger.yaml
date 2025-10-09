@@ -1,0 +1,1420 @@
+openapi: 3.0.3
+info:
+  title: Fake Store API
+  description: >-
+    API documentation for the Fake Store ecommerce project.
+    This document covers Auth, Users, Products, Comments, Rating, Cart, Orders and Role request workflows.
+  version: 1.0.0
+servers:
+  - url: http://localhost:4000/api
+    description: Local development server
+
+tags:
+  - name: Auth
+    description: Authentication and session management
+  - name: Users
+    description: Manage users (CRUD, restore, listing)
+  - name: Role
+    description: Role change requests and administration
+  - name: Products
+    description: Product catalog and management
+  - name: Comments
+    description: Product comments
+  - name: Rating
+    description: Product ratings
+  - name: Cart
+    description: Shopping cart operations
+  - name: Orders
+    description: Orders (list, get, soft-delete, restore)
+
+paths:
+# --------------------
+# AUTH
+# --------------------
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userName, email, password]
+              properties:
+                userName:
+                  type: string
+                  example: johndoe
+                email:
+                  type: string
+                  example: johndoe@example.com
+                password:
+                  type: string
+                  example: Password123!
+      responses:
+        "200":
+          description: User registered successfully
+          content:
+            application/json:
+              example:
+                _id: "66dfe3b1a5e5c201cd8f1b29"
+                userName: "johndoe"
+                email: "johndoe@example.com"
+                role: "user"
+                createdAt: "2025-10-07T14:12:00Z"
+        "409":
+          description: Email already exists
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  example: johndoe@example.com
+                password:
+                  type: string
+                  example: Password123!
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              example:
+                message: "Login successful"
+                user:
+                  _id: "66dfe3b1a5e5c201cd8f1b29"
+                  userName: "johndoe"
+                  role: "user"
+        "404":
+          description: User not found
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout user
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Logout success
+          content:
+            application/json:
+              example:
+                message: "Logout success"
+
+  /auth/profile:
+    get:
+      tags: [Auth]
+      summary: Get current user profile
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Authenticated user data
+          content:
+            application/json:
+              example:
+                _id: "66dfe3b1a5e5c201cd8f1b29"
+                userName: "johndoe"
+                email: "johndoe@example.com"
+                role: "user"
+                createdAt: "2025-10-07T14:12:00Z"
+
+# --------------------
+# USERS
+# --------------------
+  /users:
+    get:
+      tags: [Users]
+      summary: List all users
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Array of users
+          content:
+            application/json:
+              example:
+                - _id: "66df91a4bde1a678d56a4e12"
+                  userName: "johndoe"
+                  email: "johndoe@example.com"
+                  role: "user"
+                - _id: "66df91b2bde1a678d56a4e13"
+                  userName: "admin"
+                  email: "admin@example.com"
+                  role: "admin"
+
+  /users/{userId}:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+          example: 66df91a4bde1a678d56a4e12
+    get:
+      tags: [Users]
+      summary: Get user by ID
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: User found
+          content:
+            application/json:
+              example:
+                _id: "66df91a4bde1a678d56a4e12"
+                userName: "johndoe"
+                email: "johndoe@example.com"
+                role: "user"
+        "404":
+          description: User not found
+
+    put:
+      tags: [Users]
+      summary: Update user (owner or admin)
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userName:
+                  type: string
+                  example: johnUpdated
+                email:
+                  type: string
+                  example: newjohn@example.com
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              example:
+                _id: "66df91a4bde1a678d56a4e12"
+                userName: "johnUpdated"
+                email: "newjohn@example.com"
+                role: "user"
+
+    delete:
+      tags: [Users]
+      summary: Soft-delete user
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: User soft-deleted
+          content:
+            application/json:
+              example:
+                message: "User deleted successfully"
+
+# --------------------
+# ROLE (requests)
+# --------------------
+  /role:
+    get:
+      tags: [Role]
+      summary: List all role change requests (admin)
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: List of requests
+          content:
+            application/json:
+              example:
+                - _id: "66dfc2e1bde1a678d56a5a00"
+                  userId: "66df91a4bde1a678d56a4e12"
+                  requestedRole: "admin"
+                  status: "pending"
+                - _id: "66dfc2e1bde1a678d56a5a01"
+                  userId: "66df91a4bde1a678d56a4e15"
+                  requestedRole: "moderator"
+                  status: "rejected"
+
+    post:
+      tags: [Role]
+      summary: Create role change request
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              requestedRole: "admin"
+              reason: "I manage store inventory"
+      responses:
+        "201":
+          description: Request created
+          content:
+            application/json:
+              example:
+                message: "Role change request created successfully"
+                data:
+                  _id: "66dfc2e1bde1a678d56a5a00"
+                  userId: "66df91a4bde1a678d56a4e12"
+                  requestedRole: "admin"
+                  status: "pending"
+                  createdAt: "2025-10-07T14:12:00Z"
+
+  /role/acept/{requestId}:
+    put:
+      tags: [Role]
+      summary: Accept a role change request (admin)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 66dfc2e1bde1a678d56a5a00
+      responses:
+        "200":
+          description: Role change applied
+          content:
+            application/json:
+              example:
+                _id: "66dfc2e1bde1a678d56a5a00"
+                status: "accepted"
+                message: "User role updated successfully"
+
+  /role/reject/{requestId}:
+    put:
+      tags: [Role]
+      summary: Reject a role change request (admin)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 66dfc2e1bde1a678d56a5a01
+      responses:
+        "200":
+          description: Request rejected
+          content:
+            application/json:
+              example:
+                message: "Role change request rejected"
+
+# --------------------
+# PRODUCTS
+# --------------------
+  /products/name/{productName}:
+    get:
+      tags: [Products]
+      summary: Search products by name and filters
+      parameters:
+        - name: productName
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "iPhone"
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+          example: 500
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+          example: 1500
+        - name: category
+          in: query
+          schema:
+            type: string
+          example: "smartphones"
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [createdAt, price, salesCount]
+          example: "price"
+        - name: order
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+          example: "desc"
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          example: 10
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+              example:
+                - _id: "66fd1234a8b99c1d23a45b67"
+                  productName: "iPhone 15 Pro"
+                  description: "Apple smartphone with A17 chip"
+                  price: 1399.99
+                  category: "smartphones"
+                  amount: 25
+                  status: "IN_STOCK"
+                - _id: "66fd1234a8b99c1d23a45b68"
+                  productName: "iPhone 14"
+                  description: "Previous generation Apple phone"
+                  price: 999.99
+                  category: "smartphones"
+                  amount: 40
+                  status: "IN_STOCK"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /products/id/{productId}:
+    get:
+      tags: [Products]
+      summary: Get product by ID
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "66fd1234a8b99c1d23a45b67"
+      responses:
+        "200":
+          description: Product found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+              example:
+                _id: "66fd1234a8b99c1d23a45b67"
+                productName: "iPhone 15 Pro"
+                description: "Apple smartphone with A17 chip"
+                price: 1399.99
+                amount: 25
+                status: "IN_STOCK"
+                createdAt: "2025-09-25T12:00:00.000Z"
+                updatedAt: "2025-09-30T09:45:00.000Z"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /products/top:
+    get:
+      tags: [Products]
+      summary: Get top 10 products by sales count
+      responses:
+        "200":
+          description: Top products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+              example:
+                - _id: "66fd1234a8b99c1d23a45b67"
+                  productName: "MacBook Pro M3"
+                  salesCount: 1024
+                - _id: "66fd1234a8b99c1d23a45b68"
+                  productName: "iPhone 15 Pro"
+                  salesCount: 890
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /products:
+    post:
+      tags: [Products]
+      summary: Create a product (admin)
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductCreate"
+            example:
+              productName: "Samsung Galaxy S24"
+              description: "Flagship smartphone with 120Hz display"
+              price: 999.99
+              amount: 100
+              category: "smartphones"
+      responses:
+        "200":
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+              example:
+                _id: "66fd6789e3a21b9d12c88f45"
+                productName: "Samsung Galaxy S24"
+                description: "Flagship smartphone with 120Hz display"
+                price: 999.99
+                amount: 100
+                status: "IN_STOCK"
+                category: "smartphones"
+                createdAt: "2025-09-28T18:12:00.000Z"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /products/{productId}:
+    put:
+      tags: [Products]
+      summary: Update product (admin)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "66fd1234a8b99c1d23a45b67"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductUpdate"
+            example:
+              productName: "iPhone 15 Pro Max"
+              price: 1499.99
+              amount: 15
+              status: "IN_STOCK"
+      responses:
+        "200":
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+              example:
+                _id: "66fd1234a8b99c1d23a45b67"
+                productName: "iPhone 15 Pro Max"
+                description: "Apple smartphone with A17 chip"
+                price: 1499.99
+                amount: 15
+                status: "IN_STOCK"
+                updatedAt: "2025-09-30T09:45:00.000Z"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    delete:
+      tags: [Products]
+      summary: Soft-delete a product (admin)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "66fd1234a8b99c1d23a45b67"
+      responses:
+        "200":
+          description: Product deleted
+          content:
+            application/json:
+              example:
+                message: "Product deleted successfully"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    post:
+      tags: [Products]
+      summary: Restore soft-deleted product (admin)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "66fd1234a8b99c1d23a45b67"
+      responses:
+        "200":
+          description: Product restored
+          content:
+            application/json:
+              example:
+                message: "Product restored successfully"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+# --------------------
+# COMMENTS
+# --------------------
+  /comments/{productId}:
+    post:
+      tags: [Comments]
+      summary: Add comment to a product
+      description: Creates a new comment for the specified product. The user must be authenticated.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "66fd1234a8b99c1d23a45b67"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              properties:
+                text:
+                  type: string
+            example:
+              text: "Amazing product! Totally worth it."
+      responses:
+        "201":
+          description: Comment created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+              example:
+                _id: "66fd9e12bc45da00124ab789"
+                productId: "66fd1234a8b99c1d23a45b67"
+                userId: "66fcde99b33caa00997ab321"
+                userName: "tomasdev"
+                text: "Amazing product! Totally worth it."
+                createdAt: "2025-09-30T15:43:00.000Z"
+                updatedAt: "2025-09-30T15:43:00.000Z"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /comments/product/{id}:
+    get:
+      tags: [Comments]
+      summary: Get all comments for a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "66fd1234a8b99c1d23a45b67"
+      responses:
+        "200":
+          description: Array of comments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Comment"
+              example:
+                - _id: "66fd9e12bc45da00124ab789"
+                  userName: "tomasdev"
+                  text: "Amazing product! Totally worth it."
+                  createdAt: "2025-09-30T15:43:00.000Z"
+                - _id: "66fd9e45bc45da00124ab790"
+                  userName: "sofia93"
+                  text: "Fast shipping and excellent quality."
+                  createdAt: "2025-09-30T16:12:00.000Z"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /comments/user:
+    get:
+      tags: [Comments]
+      summary: Get all comments by current user
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Array of comments created by the authenticated user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Comment"
+              example:
+                - _id: "66fd9e12bc45da00124ab789"
+                  productId: "66fd1234a8b99c1d23a45b67"
+                  text: "Amazing product! Totally worth it."
+                  createdAt: "2025-09-30T15:43:00.000Z"
+                - _id: "66fd9f32bc45da00124ab791"
+                  productId: "66fd1234a8b99c1d23a45b70"
+                  text: "Nice quality, could be cheaper."
+                  createdAt: "2025-09-29T11:22:00.000Z"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /comment/{commentId}:
+    put:
+      tags: [Comments]
+      summary: Update a comment (owner or admin)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "66fd9e12bc45da00124ab789"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              properties:
+                text:
+                  type: string
+            example:
+              text: "Updated comment after product use."
+      responses:
+        "200":
+          description: Comment updated successfully
+          content:
+            application/json:
+              example:
+                message: "Comment updated successfully"
+                updatedComment:
+                  _id: "66fd9e12bc45da00124ab789"
+                  text: "Updated comment after product use."
+                  updatedAt: "2025-10-01T12:33:00.000Z"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /comments/restore/{commentId}:
+    post:
+      tags: [Comments]
+      summary: Restore soft-deleted comment (admin)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "66fd9e12bc45da00124ab789"
+      responses:
+        "200":
+          description: Comment restored
+          content:
+            application/json:
+              example:
+                message: "Comment restored successfully"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /comments/{commentId}:
+    delete:
+      tags: [Comments]
+      summary: Soft-delete a comment (owner or admin)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "66fd9e12bc45da00124ab789"
+      responses:
+        "200":
+          description: Comment deleted
+          content:
+            application/json:
+              example:
+                message: "Comment deleted successfully"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+# --------------------
+# RATING
+# --------------------
+  /rating/{productId}:
+    put:
+      tags: [Rating]
+      summary: Rate a product or update existing rating
+      description: If user already rated the product, the rating is updated and the product average is recalculated.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "66fd1234a8b99c1d23a45b67"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [rating]
+              properties:
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+            example:
+              rating: 5
+      responses:
+        "200":
+          description: Qualification successfully completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  averageRating:
+                    type: number
+                    example: 4.7
+                  totalRatings:
+                    type: integer
+                    example: 125
+              example:
+                message: "Qualification successfully completed"
+                averageRating: 4.7
+                totalRatings: 125
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+# --------------------
+# CART
+# --------------------
+  /cart:
+    get:
+      tags: [Cart]
+      summary: Get current user's cart
+      description: Returns the current authenticated user's active cart with all products and quantities.
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: User cart retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+              example:
+                _id: "66fdc123a8b99c1d23a45b67"
+                userId: "66fcde99b33caa00997ab321"
+                products:
+                  - productId: "66fd1234a8b99c1d23a45b68"
+                    name: "Empanada de carne"
+                    price: 1200
+                    quantity: 2
+                  - productId: "66fd1234a8b99c1d23a45b69"
+                    name: "Empanada de pollo"
+                    price: 1100
+                    quantity: 1
+                totalPrice: 3500
+                updatedAt: "2025-10-01T15:30:00.000Z"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /cart/{productId}:
+    post:
+      tags: [Cart]
+      summary: Add product to cart (owner)
+      description: Adds a product to the current user's cart. If no cart exists, a new one is created.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "66fd1234a8b99c1d23a45b68"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [quantity]
+              properties:
+                quantity:
+                  type: integer
+                  minimum: 1
+            example:
+              quantity: 2
+      responses:
+        "201":
+          description: Cart created with product (new cart)
+          content:
+            application/json:
+              example:
+                message: "Cart created and product added"
+                cartId: "66fdc123a8b99c1d23a45b67"
+        "200":
+          description: Product added to existing cart
+          content:
+            application/json:
+              example:
+                message: "Product added to cart"
+                updatedCart:
+                  totalPrice: 3500
+                  productsCount: 3
+        "409":
+          $ref: "#/components/responses/Conflict"
+
+    put:
+      tags: [Cart]
+      summary: Update product quantity in cart (owner)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "66fd1234a8b99c1d23a45b68"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [quantity]
+              properties:
+                quantity:
+                  type: integer
+                  minimum: 1
+            example:
+              quantity: 5
+      responses:
+        "200":
+          description: Product quantity updated
+          content:
+            application/json:
+              example:
+                message: "Product quantity updated successfully"
+                productId: "66fd1234a8b99c1d23a45b68"
+                newQuantity: 5
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    delete:
+      tags: [Cart]
+      summary: Remove product from cart (owner)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "66fd1234a8b99c1d23a45b68"
+      responses:
+        "200":
+          description: Product removed from cart
+          content:
+            application/json:
+              example:
+                message: "Product removed from cart"
+                remainingItems: 1
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /cart/clear:
+    delete:
+      tags: [Cart]
+      summary: Clear all products from cart (ownerOrAdmin)
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Cart cleared
+          content:
+            application/json:
+              example:
+                message: "Cart cleared successfully"
+                clearedAt: "2025-10-01T17:45:00.000Z"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /cart/{cartId}/restore:
+    post:
+      tags: [Cart]
+      summary: Restore soft-deleted cart (admin)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: cartId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "66fdc123a8b99c1d23a45b67"
+      responses:
+        "200":
+          description: Cart restored successfully
+          content:
+            application/json:
+              example:
+                message: "Cart restored successfully"
+                restoredAt: "2025-10-01T18:00:00.000Z"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /cart/{cartId}:
+    delete:
+      tags: [Cart]
+      summary: Soft-delete a cart (ownerOrAdmin)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: cartId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "66fdc123a8b99c1d23a45b67"
+      responses:
+        "200":
+          description: Cart deleted
+          content:
+            application/json:
+              example:
+                message: "Cart soft-deleted successfully"
+                deletedAt: "2025-10-01T18:10:00.000Z"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+# --------------------
+# ORDERS
+# --------------------
+  /orders:
+    get:
+      tags: [Orders]
+      summary: Get orders for current user (ownerOrAdmin)
+      description: Returns a paginated list of all orders for the authenticated user. Admins can view all orders.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            example: "pending"
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            example: "createdAt"
+        - name: order
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            example: "desc"
+        - name: page
+          in: query
+          schema:
+            type: integer
+            example: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            example: 10
+      responses:
+        "200":
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+              example:
+                - _id: "66fdee12bc45da00124ab789"
+                  totalAmount: 3500
+                  paymentStatus: "paid"
+                  status: "completed"
+                  createdAt: "2025-09-30T15:43:00.000Z"
+                - _id: "66fdee99bc45da00124ab790"
+                  totalAmount: 1800
+                  paymentStatus: "unpaid"
+                  status: "pending"
+                  createdAt: "2025-10-01T10:20:00.000Z"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /orders/{orderId}:
+    get:
+      tags: [Orders]
+      summary: Get order by ID (ownerOrAdmin)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "66fdee12bc45da00124ab789"
+      responses:
+        "200":
+          description: Order found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+              example:
+                _id: "66fdee12bc45da00124ab789"
+                userId: "66fcde99b33caa00997ab321"
+                products:
+                  - productId: "66fd1234a8b99c1d23a45b68"
+                    name: "Empanada de carne"
+                    quantity: 2
+                    price: 1200
+                totalAmount: 2400
+                paymentStatus: "paid"
+                status: "completed"
+                createdAt: "2025-09-30T15:43:00.000Z"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    delete:
+      tags: [Orders]
+      summary: Soft-delete an order (ownerOrAdmin)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "66fdee12bc45da00124ab789"
+      responses:
+        "200":
+          description: Order deleted
+          content:
+            application/json:
+              example:
+                message: "Order soft-deleted successfully"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    post:
+      tags: [Orders]
+      summary: Restore soft-deleted order (admin)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "66fdee12bc45da00124ab789"
+      responses:
+        "200":
+          description: Order restored
+          content:
+            application/json:
+              example:
+                message: "Order restored successfully"
+                restoredAt: "2025-10-01T18:30:00.000Z"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+# --------------------
+# COMPONENTS
+# --------------------
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+  responses:
+    BadRequest:
+      description: Bad request / validation error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Forbidden:
+      description: Forbidden - insufficient privileges
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Conflict:
+      description: Conflict - resource already exists or business rule
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Descriptive error message"
+
+    UserBase:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "64b7c2c5f1a2b0d1c8a1a9c3"
+        userName:
+          type: string
+          example: johndoe
+        email:
+          type: string
+          format: email
+          example: johndoe@example.com
+        role:
+          type: string
+          example: user
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UserPublic:
+      allOf:
+        - $ref: "#/components/schemas/UserBase"
+      description: Public view of user (no password or tokens)
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "64b7c2c5f1a2b0d1c8a1a9c9"
+        productName:
+          type: string
+          example: iPhone 15
+        description:
+          type: string
+          example: Latest Apple iPhone with new features
+        price:
+          type: number
+          example: 1200.99
+        amount:
+          type: integer
+          example: 50
+        status:
+          type: string
+          enum: [IN_STOCK, OUT_OF_STOCK, DISCONTINUED]
+          example: IN_STOCK
+        salesCount:
+          type: integer
+          example: 200
+        rating:
+          type: number
+          format: float
+          example: 4.5
+        ratingCuantity:
+          type: integer
+          example: 10
+        comments:
+          type: array
+          items:
+            $ref: "#/components/schemas/CommentSummary"
+
+    ProductCreate:
+      type: object
+      required: [productName, description, price, amount]
+      properties:
+        productName:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        amount:
+          type: integer
+
+    ProductUpdate:
+      type: object
+      properties:
+        productName:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        amount:
+          type: integer
+        status:
+          type: string
+          enum: [IN_STOCK, OUT_OF_STOCK, DISCONTINUED]
+
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+        productId:
+          type: string
+        userId:
+          type: string
+        text:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CommentSummary:
+      type: object
+      properties:
+        text:
+          type: string
+        userName:
+          type: string
+
+    Cart:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              productId:
+                type: string
+              quantity:
+                type: integer
+        totalPrice:
+          type: number
+
+    RequestRoleChange:
+      type: object
+      required: [currentRole, requestRole, reason]
+      properties:
+        currentRole:
+          type: string
+          example: user
+        requestRole:
+          type: string
+          example: admin
+        reason:
+          type: string
+          example: Necesito acceso para gestionar productos
+
+    RoleRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        currentRole:
+          type: string
+        requestRole:
+          type: string
+        reason:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, ACCEPTED, REJECTED]
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              productId:
+                type: string
+              quantity:
+                type: integer
+        status:
+          type: string
+          enum: [pending, completed, cancelled]
+        total:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
