@@ -1,12 +1,13 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express'
 
-import Product from '../models/Product.model.js';
+import Product from '../models/Product.model.js'
 import { ProductQuerySchema } from "../schema"
-import { parseProduct } from '../utils/parse/parseProduct.js';
-import { HttpError } from '../errors/HttpError.js';
-import { ProductStatus } from '../types/product.types.js';
+import { parseProduct } from '../utils/parse/parseProduct.js'
+import { HttpError } from '../errors/HttpError.js'
+import { ProductStatus } from '../types/product.types.js'
 import { z } from "zod"
-import { restoreProduct, softDeleteProduct } from '../services/product.service.js';
+import { restoreProduct, softDeleteProduct } from '../services/product.service.js'
+import { cacheService } from '../services/cache.service.js'
 
 
 const commentsPopulateConfig = {
@@ -34,7 +35,7 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
             if (query.maxPrice !== undefined) { filter.price.$lte = query.maxPrice }
         }
 
-        if (req.user.role !== "admin") { filter.status = ProductStatus.IN_STOCK }
+        if (!req.user || req.user.role !== "admin") { filter.status = ProductStatus.IN_STOCK }
 
         if (query.category) { filter.category = query.category }
 
@@ -91,17 +92,20 @@ export const getTopProducts = async (_req: Request, res: Response, next: NextFun
 
 export const addProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { productName, description, price, amount } = req.body
+        const { productName, description, category, price, amount } = req.body
 
         const newProduct = new Product({
             productName,
             description,
+            category,
             price,
             amount
         })
         const productSaved = await newProduct.save()
 
         const parsedProduct = parseProduct(productSaved)
+
+        await cacheService.invalidateNamespace("products")
 
         res.status(200).json(parsedProduct)
     } catch (error) {
@@ -122,6 +126,8 @@ export const updateProduct = async (req: Request, res: Response, next: NextFunct
 
         const parsedProduct = parseProduct(updatedProduct)
 
+        await cacheService.invalidateNamespace("products")
+
         res.status(200).json(parsedProduct)
     } catch (error) {
         next(error)
@@ -135,6 +141,8 @@ export const deleteProduct = async (req: Request, res: Response, next: NextFunct
         const deletedProduct = softDeleteProduct(productId)
         if (!deletedProduct) { throw new HttpError("Product not found", 404) }
 
+        await cacheService.invalidateNamespace("products")
+
         res.status(200).json({ message: "Product deleted" })
     } catch (error) {
         next(error)
@@ -147,6 +155,8 @@ export const productRestore = async (req: Request, res: Response, next: NextFunc
 
         const restore = restoreProduct(productId)
         if (!restore) { throw new HttpError("Product not found", 404) }
+
+        await cacheService.invalidateNamespace("products")
 
         res.status(200).json({ message: "Product restored" })
     } catch (error) {

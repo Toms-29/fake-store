@@ -2,11 +2,11 @@ import { z } from "zod";
 
 export const ObjectIdSchema = z.string().trim().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid ObjectId" })
 
-export const ProductName = z.string().trim().nonempty("Product name is required").min(3).max(100).regex(/^[a-zA-Z0-9-_]+$/, "Solo letras, números, guiones y guiones bajos")
+export const ProductName = z.string().trim().nonempty("Product name is required").min(1).max(100).regex(/^[a-zA-Z0-9\s_-]+$/, "Solo letras, números, guiones y guiones bajos")
 
-export const UserNameSchema = z.string().trim().nonempty("User name is required").min(1).max(15).regex(/^[a-zA-Z0-9-_]+$/, "Solo letras, números, guiones y guiones bajos")
+export const UserNameSchema = z.string().trim().nonempty("User name is required").min(1).max(15).regex(/^[a-zA-Z0-9\s_-]+$/, "Solo letras, números, guiones y guiones bajos")
 
-export const PositiveInteger = z.preprocess((val) => Number(val), z.number().positive({ message: "Must be a positive integer" }).int())
+export const PositiveInteger = z.preprocess((val) => Number(val), z.number().int().min(0, { message: "Must be >= 0" }))
 
 export const PositiveFloat = z.preprocess((val) => Number(val), z.number().positive({ message: "Must be a positive integer" }))
 

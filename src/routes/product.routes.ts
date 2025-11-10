@@ -10,7 +10,7 @@ import { sanitizeQuery } from "../middlewares/sanitizeQuery.js";
 
 const router = Router();
 
-router.get("/products/name/:productName",
+router.get("/products",
     createRateLimiter(1, 60, "Too many requests. Please slow down."),
     sanitizeQuery,
     validateSchema({ query: ProductQuerySchema }),
