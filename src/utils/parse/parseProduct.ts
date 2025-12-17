@@ -5,6 +5,7 @@ export const parseProduct = (product: any) => {
         id: product._id.toString(),
         productName: product.productName,
         description: product.description,
+        category: product.category,
         comments: Array.isArray(product.comments)
             ? product.comments
                 .filter((c: any) => c?.userId && c.userId.userName && c.text)
@@ -15,7 +16,6 @@ export const parseProduct = (product: any) => {
             : [],
         price: product.price,
         images: product.images,
-        category: product.category,
         salesCount: product.salesCount,
         rating: product.rating,
         amount: product.amount,

@@ -20,8 +20,8 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     try {
         const { userName, email, password } = req.body
 
-        const checkEmail = await User.findOne({ email, isDeleted: false })
-        if (!checkEmail) { throw new HttpError("User already exists", 400) }
+        const checkEmail = await User.findOne({ email })
+        if (checkEmail) { throw new HttpError("User already exists", 400) }
 
         const passwordHash = await bcrypt.hash(password, 10)
 

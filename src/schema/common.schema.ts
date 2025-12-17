@@ -6,7 +6,7 @@ export const ProductName = z.string().trim().nonempty("Product name is required"
 
 export const UserNameSchema = z.string().trim().nonempty("User name is required").min(1).max(15).regex(/^[\p{L}\p{N}\s._-]+$/u, "Solo letras, números, guiones y guiones bajos")
 
-export const PositiveInteger = z.preprocess((val) => Number(val), z.number().positive({ message: "Must be a positive integer" }).int())
+export const PositiveInteger = z.preprocess((val) => Number(val), z.number().int().min(0, { message: "Must be >= 0" }))
 
 export const PositiveFloat = z.preprocess((val) => Number(val), z.number().positive({ message: "Must be a positive integer" }))
 

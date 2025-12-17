@@ -65,15 +65,16 @@ export const getProductComments = async (req: Request, res: Response, next: Next
 export const getUserComments = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.user.id
+        const { page, limit, skip, sortField, sortOrder } = req.pagination as { page: number, limit: number, skip: number, sortField: string, sortOrder: number }
 
-        const commentsFound = await Comment.find({ userId: userId }).populate("userId", "userName").lean()
-        if (commentsFound.length === 0) { throw new HttpError("Comments not found", 404) }
+        const { data, meta } = await paginateResult(Comment, page, limit, skip, sortField, sortOrder, { userId }, productPopulate)
+        if (data.length === 0) { throw new HttpError("Comments not found", 404) }
 
-        const commentsParsed = commentsFound.map(comment => {
+        const commentsParsed = data.map((comment: any) => {
             return parseComment(comment)
         })
 
-        res.status(200).json(commentsParsed)
+        res.status(200).json({ data: commentsParsed, meta })
     } catch (error) {
         next(error)
     }

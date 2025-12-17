@@ -20,7 +20,7 @@ export const BaseProductSchema = z.object({
     images: z.array(z.string().url()).max(5, "Max five images allowed").optional()
 }).merge(TimeStampsSchema).merge(DeleteStatusSchema).strict()
 
-export const AddProductSchema = BaseProductSchema.pick({ productName: true, description: true, price: true, amount: true, images: true }).strict()
+export const AddProductSchema = BaseProductSchema.pick({ productName: true, description: true, category: true, price: true, amount: true, images: true }).strict()
 
 export const ProductUpdateSchema = BaseProductSchema.pick({ productName: true, description: true, price: true, rating: true, amount: true, status: true, images: true }).partial()
 

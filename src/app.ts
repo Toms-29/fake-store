@@ -19,6 +19,7 @@ import orderRoutes from "./routes/order.routes.js"
 import { corsOptions } from "./config/cors.js"
 import { helmetOptions } from "./config/helmet.js"
 import { errorHandler } from "./middlewares/errorHandler.js"
+import { cacheMiddleware } from "./middlewares/cacheMiddleware.js"
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use(cors(corsOptions))
 app.use(helmetOptions)
 app.use(morgan('dev'))
 app.use(cookieParser())
+app.use(cacheMiddleware)
 
 const swaggerDocument = YAML.load("./src/swagger.yaml")
 
