@@ -16,7 +16,7 @@ export class User {
     @prop({ required: true, enum: UserRole, default: UserRole.USER })
     role: UserRole
 
-    @prop({ required: true, trim: true, maxlength: 32, minlength: 6 })
+    @prop({ required: true, trim: true })
     password: string
 
     @prop({ default: null })

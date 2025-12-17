@@ -6,6 +6,7 @@ import { HttpError } from '../errors/HttpError.js'
 import { parseRole } from '../utils/parse/parseRole.js'
 import { queryStatus } from '../types/role.types.js'
 import { restoreRole, softDeleteRole } from '../services/role.service.js'
+import { paginateResult } from '../utils/paginateResult.js'
 
 export const requestRoleChange = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -81,14 +82,16 @@ export const rejectRoleChange = async (req: Request, res: Response, next: NextFu
     }
 }
 
-export const getRequestsRoleChange = async (_req: Request, res: Response, next: NextFunction) => {
+export const getRequestsRoleChange = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const requests = await Role.find()
-        if (!requests) { throw new HttpError("Request not found", 404) }
+        const { page, limit, skip, sortField, sortOrder } = req.pagination as { page: number, limit: number, skip: number, sortField: string, sortOrder: number }
 
-        const parsedRequests = requests.map(request => parseRole(request))
+        const { data, meta } = await paginateResult(Role, page, limit, skip, sortField, sortOrder)
+        if (!data) { throw new HttpError("Request not found", 404) }
 
-        res.status(200).json(parsedRequests)
+        const parsedRequests = data.map((request: any) => parseRole(request))
+
+        res.status(200).json({ data: parsedRequests, meta })
     } catch (error) {
         next(error)
     }

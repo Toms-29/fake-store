@@ -14,10 +14,12 @@ export const parseProduct = (product: any) => {
                 }))
             : [],
         price: product.price,
-        calification: product.calification,
+        images: product.images,
+        category: product.category,
+        salesCount: product.salesCount,
+        rating: product.rating,
         amount: product.amount,
         status: product.status,
-        images: product.images,
         createdAt: product.createdAt,
         updatedAt: product.updatedAt
     })

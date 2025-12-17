@@ -7,6 +7,7 @@ import { isOwnerOrAdminFactory } from "../middlewares/adminOrOwner.js";
 import { validateSchema } from "../middlewares/validateSchema.js";
 import { IdParamSchema, RequestRoleChangeSchema } from "../schema/index.js";
 import { sanitizeQuery } from "../middlewares/sanitizeQuery.js";
+import { paginationMiddleware } from "../middlewares/pagination.js";
 
 const router = Router()
 
@@ -19,6 +20,7 @@ router.get('/role/user/:userId',
 router.get('/role',
     authRequired,
     roleVerify,
+    paginationMiddleware,
     getRequestsRoleChange)
 
 router.put('/role/acept/:requestId',
