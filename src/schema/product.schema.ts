@@ -6,15 +6,15 @@ export const RateSchema = z.object({ rating: z.number().min(1).max(5) })
 
 export const ProductStatusSchema = z.enum(["in_stock", "out_of_stock", "pending"])
 
-export const ProductCategorySchema = z.enum(["tech", "learn", "sport", "tools", "garden", "furniture", "kitchen"])
+export const CategorySchema = z.enum(["tech", "learn", "sport", "tools", "garden", "furniture", "kitchen"])
 
 export const BaseProductSchema = z.object({
     id: ObjectIdSchema,
     productName: ProductName,
     description: z.string().trim().nonempty({ message: "Description is required" }).min(10).max(500, { message: "Description must be less than 500 characters" }),
-    category: ProductCategorySchema,
     price: PositiveFloat,
-    rating: PositiveInteger,
+    category: CategorySchema,
+    rating: z.number().min(0).max(5),
     amount: PositiveInteger,
     status: ProductStatusSchema,
     images: z.array(z.string().url()).max(5, "Max five images allowed").optional()
@@ -25,7 +25,8 @@ export const AddProductSchema = BaseProductSchema.pick({ productName: true, desc
 export const ProductUpdateSchema = BaseProductSchema.pick({ productName: true, description: true, price: true, rating: true, amount: true, status: true, images: true }).partial()
 
 export const ResponseProductSchema = BaseProductSchema.extend({
-    comments: z.array(CommentedBySchema.omit({ id: true })).optional()
+    comments: z.array(CommentedBySchema.omit({ id: true })).optional(),
+    salesCount: z.number().min(0)
 }).omit({ isDeleted: true, deletedAt: true }).strict().readonly()
 
 export const ProductQuerySchema = z.object({
@@ -33,7 +34,7 @@ export const ProductQuerySchema = z.object({
     status: ProductStatusSchema,
     minPrice: z.preprocess((val) => Number(val), z.number().min(0)),
     maxPrice: z.preprocess((val) => Number(val), z.number().min(0)),
-    category: ProductCategorySchema,
+    category: CategorySchema,
     sortBy: z.enum(["price", "rating", "salesCount", "createdAt"]),
     order: z.enum(["asc", "desc"]).optional(),
     page: z.preprocess((val) => Number(val), z.number().int().min(1)),

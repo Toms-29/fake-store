@@ -6,9 +6,16 @@ declare global {
             user?: {
                 id: string;
                 role: UserRole;
-            };
+            },
+            pagination?: {
+                page: number,
+                limit: number,
+                skip: number,
+                sortField: string,
+                sortOrder: number
+            }
         }
     }
 }
 
-export {};
+export { };

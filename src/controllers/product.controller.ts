@@ -6,12 +6,14 @@ import { parseProduct } from '../utils/parse/parseProduct.js'
 import { HttpError } from '../errors/HttpError.js'
 import { ProductStatus } from '../types/product.types.js'
 import { z } from "zod"
-import { restoreProduct, softDeleteProduct } from '../services/product.service.js'
+import { restoreProduct, softDeleteProduct } from '../services/product.service.js';
+import { paginateResult } from '../utils/paginateResult.js';
 import { cacheService } from '../services/cache.service.js'
 
 
 const commentsPopulateConfig = {
     path: 'comments',
+    options: { limit: 10, skip: 5 },
     select: 'text userId -_id',
     populate: {
         path: 'userId',
@@ -24,6 +26,7 @@ type ProductQuery = z.infer<typeof ProductQuerySchema>
 export const getProducts = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const query = req.query as Partial<ProductQuery>
+        const { page, limit, skip, sortField, sortOrder } = req.pagination as { page: number, limit: number, skip: number, sortField: string, sortOrder: number }
 
         const filter: any = {}
 
@@ -36,27 +39,15 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
         }
 
         if (!req.user || req.user.role !== "admin") { filter.status = ProductStatus.IN_STOCK }
+        if (!req.user || req.user.role !== "admin") { filter.status = ProductStatus.IN_STOCK }
 
         if (query.category) { filter.category = query.category }
 
-        const sortField = query.sortBy || "createdAt"
-        const sortOrder = query.order === "asc" ? 1 : -1
+        const { data, meta } = await paginateResult(Product, page, limit, skip, sortField, sortOrder, filter)
 
-        const page = query.page || 1
-        const limit = query.limit || 10
-        const skipt = (page - 1) * limit
+        const parsedProducts = data.map((p: any) => parseProduct(p))
 
-        const products = await Product.find(filter)
-            .sort({ [sortField]: sortOrder })
-            .skip(skipt)
-            .limit(limit)
-            .populate(commentsPopulateConfig)
-            .lean()
-        if (products.length === 0) { throw new HttpError("Products not found", 404) }
-
-        const parsedProducts = products.map(p => parseProduct(p))
-
-        res.status(200).json(parsedProducts)
+        res.status(200).json({ data: parsedProducts, meta })
     } catch (error) {
         next(error)
     }

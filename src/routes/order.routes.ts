@@ -8,6 +8,7 @@ import { validateSchema } from "../middlewares/validateSchema.js"
 import { OrderQuerySchema, IdParamSchema } from "../schema/index.js"
 import { sanitizeQuery } from "../middlewares/sanitizeQuery.js"
 import { roleVerify } from "../middlewares/roleVerify.js"
+import { paginationMiddleware } from "../middlewares/pagination.js"
 
 const router = Router()
 
@@ -17,6 +18,7 @@ router.get("/orders",
     createRateLimiter(15, 10, "Too many orders submitted. Try again later."),
     sanitizeQuery,
     validateSchema({ user: IdParamSchema, query: OrderQuerySchema }),
+    paginationMiddleware,
     getOrders)
 
 router.get("/orders/:orderId",
