@@ -10,7 +10,6 @@ import { restoreProduct, softDeleteProduct } from '../services/product.service.j
 import { paginateResult } from '../utils/paginateResult.js';
 import { cacheService } from '../services/cache.service.js'
 
-
 const commentsPopulateConfig = {
     path: 'comments',
     options: { limit: 10, skip: 5 },
@@ -38,7 +37,6 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
             if (query.maxPrice !== undefined) { filter.price.$lte = query.maxPrice }
         }
 
-        if (!req.user || req.user.role !== "admin") { filter.status = ProductStatus.IN_STOCK }
         if (!req.user || req.user.role !== "admin") { filter.status = ProductStatus.IN_STOCK }
 
         if (query.category) { filter.category = query.category }
