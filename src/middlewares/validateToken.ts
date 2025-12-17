@@ -7,7 +7,6 @@ declare module 'express-serve-static-core' {
     interface Request {
         user?: any
     }
-
 }
 
 export const authRequired = (req: Request, res: Response, next: NextFunction): void => {

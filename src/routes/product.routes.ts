@@ -7,13 +7,15 @@ import { createRateLimiter } from "../middlewares/rateLimit.js";
 import { validateSchema } from "../middlewares/validateSchema.js";
 import { IdParamSchema, AddProductSchema, ProductQuerySchema, ProductUpdateSchema } from "../schema/index.js";
 import { sanitizeQuery } from "../middlewares/sanitizeQuery.js";
+import { paginationMiddleware } from "../middlewares/pagination.js";
 
 const router = Router();
 
-router.get("/products/name/:productName",
+router.get("/products",
     createRateLimiter(1, 60, "Too many requests. Please slow down."),
     sanitizeQuery,
     validateSchema({ query: ProductQuerySchema }),
+    paginationMiddleware,
     getProducts)
 
 router.get("/products/id/:productId",

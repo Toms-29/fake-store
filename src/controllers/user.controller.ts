@@ -5,6 +5,7 @@ import User from "../models/User.model.js";
 import { HttpError } from "../errors/HttpError.js";
 import { parseUser } from "../utils/parse/parseUser.js";
 import { restoreUser, softDeleteUser } from "../services/user.service.js";
+import { paginateResult } from "../utils/paginateResult.js";
 
 export const getUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -12,7 +13,7 @@ export const getUser = async (req: Request, res: Response, next: NextFunction) =
 
         if (req.user.role !== "admin" && req.user.id !== userId) { throw new HttpError("Forbidden", 403) }
 
-        const userFound = await User.findOne({ _id: userId, isDeleted: false }, { password: false })
+        const userFound = await User.findOne({ _id: userId }, { password: false })
         if (!userFound) { throw new HttpError("User not found", 404) }
 
         const parsedUser = parseUser(userFound)
@@ -26,19 +27,21 @@ export const getUser = async (req: Request, res: Response, next: NextFunction) =
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { userName } = req.query
+        const { page, limit, skip, sortField, sortOrder } = req.pagination as { page: number, limit: number, skip: number, sortField: string, sortOrder: number }
 
         const query: any = {}
         if (userName) { query.userName = { $regex: userName, $options: "i" } }
+        query.password = false
 
-        const usersFound = await User.find({ ...query, isDeleted: false }, { password: false })
-        if (usersFound.length === 0) {
+        const { data, meta } = await paginateResult(User, page, limit, skip, sortField, sortOrder, query)
+        if (data.length === 0) {
             const message = userName ? `No users found matching '${userName}'` : "No users found"
             throw new HttpError(message, 404)
         }
 
-        const parsedUsers = usersFound.map(user => parseUser(user))
+        const parsedUsers = data.map((user: any) => parseUser(user))
 
-        res.status(200).json(parsedUsers)
+        res.status(200).json({ data: parsedUsers, meta })
     } catch (error) {
         next(error)
     }

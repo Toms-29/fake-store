@@ -7,6 +7,7 @@ import { isOwnerOrAdminFactory } from "../middlewares/adminOrOwner.js";
 import { validateSchema } from "../middlewares/validateSchema.js";
 import { IdParamSchema, updatedUserSchema, UserNameQuerySchema } from "../schema/index.js";
 import { sanitizeQuery } from "../middlewares/sanitizeQuery.js";
+import { paginationMiddleware } from "../middlewares/pagination.js";
 
 const router = Router()
 
@@ -21,6 +22,7 @@ router.get("/users",
     roleVerify,
     sanitizeQuery,
     validateSchema({ query: UserNameQuerySchema.partial() }),
+    paginationMiddleware,
     getUsers)
 
 router.put("/users/:userId",

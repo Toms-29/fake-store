@@ -20,8 +20,8 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     try {
         const { userName, email, password } = req.body
 
-        const checkEmail = await User.findOne({ email, isDeleted: false })
-        if (!checkEmail) { throw new HttpError("User already exists", 400) }
+        const checkEmail = await User.findOne({ email })
+        if (checkEmail) { throw new HttpError("User already exists", 400) }
 
         const passwordHash = await bcrypt.hash(password, 10)
 
@@ -57,13 +57,13 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 
         const userFound = await User.findOne({ email: email })
         if (!userFound) { throw new HttpError("User not found", 404) }
-
+        
         const isMatch = await bcrypt.compare(password, userFound.password)
         if (!isMatch) { throw new HttpError("Invalid credentials ", 400) }
-
+        
         const token = createAccessToken({ id: userFound._id, role: userFound.role })
         const refreshToken = createRefreshToken({ id: userFound._id })
-
+        
         userFound.refreshToken = refreshToken
         await userFound.save()
 

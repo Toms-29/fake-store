@@ -7,6 +7,7 @@ import { createRateLimiter } from "../middlewares/rateLimit.js"
 import { validateSchema } from "../middlewares/validateSchema.js"
 import { IdParamSchema, TextOfCommentSchema } from "../schema/index.js"
 import { sanitizeQuery } from "../middlewares/sanitizeQuery.js"
+import { paginationMiddleware } from "../middlewares/pagination.js"
 
 const router = Router()
 
@@ -21,11 +22,13 @@ router.post("/comments/:productId",
 router.get("/comments/product/:id",
     authRequired,
     validateSchema({ params: IdParamSchema }),
+    paginationMiddleware,
     getProductComments)
 
 router.get("/comments/user",
     authRequired, isOwnerOrAdminFactory("admin"),
     validateSchema({ user: IdParamSchema }),
+    paginationMiddleware,
     getUserComments)
 
 router.put("/comment/:commentId",
